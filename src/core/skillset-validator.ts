@@ -10,3 +10,4 @@ import type {
 
 export const SKILLSET_SPEC_VERSION = '1.0'
 const SKILLSET_MD = 'SKILLSET.md'
+const MIN_DESCRIPTION_WORDS = 30
