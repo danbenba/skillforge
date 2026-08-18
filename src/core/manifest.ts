@@ -94,3 +94,12 @@ export async function removeSkillFromManifest(
   delete manifest.skills[skillName]
   await writeManifest(scopeConfig, manifest)
 }
+
+export async function addSkillsetToManifest(
+  scopeConfig: ScopeConfig,
+  skillset: InstalledSkillset
+): Promise<void> {
+  const manifest = await readManifest(scopeConfig)
+  manifest.skillsets[skillset.name] = skillset
+  await writeManifest(scopeConfig, manifest)
+}
