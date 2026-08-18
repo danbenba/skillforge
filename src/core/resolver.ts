@@ -11,3 +11,7 @@ const SKILLSETS_DIR = 'skillsets'
 function globalBase(): string {
   return path.join(os.homedir(), '.skillforge', 'global')
 }
+
+function sharedBase(): string {
+  return path.join(os.homedir(), '.skillforge', 'shared')
+}
