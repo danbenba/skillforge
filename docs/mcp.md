@@ -80,3 +80,9 @@ After saving the config, restart the agent (or reload its MCP servers). The Skil
 
 ---
 
+## Transport
+
+The MCP server uses **`StdioServerTransport`**: it communicates over stdin/stdout, the standard for local MCP servers. There is no HTTP server, no port, and no authentication needed.
+
+---
+
