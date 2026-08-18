@@ -30,3 +30,10 @@ export interface SearchOptions {
   limit?: number
   offset?: number
 }
+
+export interface SearchResponse {
+  skills: RegistrySkill[]
+  total: number
+  limit: number
+  offset: number
+}
