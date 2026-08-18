@@ -372,3 +372,19 @@ interface SubdirResult {
   unknownDirs: string[]
   hasReadme: boolean
 }
+
+async function checkSubdirectories(skillPath: string): Promise<SubdirResult> {
+  const unknownDirs: string[] = []
+  let hasReadme = false
+  try {
+    const entries = await readdir(skillPath, { withFileTypes: true })
+    for (const entry of entries) {
+      if (entry.isDirectory() && !ALLOWED_SUBDIRS.has(entry.name)) {
+        unknownDirs.push(entry.name)
+      } else if (entry.isFile() && entry.name.toLowerCase() === 'readme.md') {
+        hasReadme = true
+      }
+    }
+  } catch {}
+  return { unknownDirs, hasReadme }
+}
