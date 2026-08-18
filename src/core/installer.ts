@@ -23,3 +23,65 @@ export interface InstallResult {
   validation: ValidationResult
   alreadyExisted: boolean
 }
+
+export async function installFromPath(
+  sourcePath: string,
+  options: InstallOptions
+): Promise<InstallResult> {
+  const absSource = path.resolve(sourcePath)
+  const validation = await validateSkill(absSource)
+  const skillName = validation.skill
+
+  const scopeConfig = await resolveScope(options.scope)
+
+  if (!options.force) {
+    const allScopes = await resolveAllScopes()
+    for (const sc of allScopes) {
+      if (sc.level === options.scope) continue
+      const manifest = await readManifest(sc)
+      if (skillName in manifest.skills) {
+      }
+    }
+  }
+
+  const targetDir = path.join(scopeConfig.skillsDir, skillName)
+
+  let alreadyExisted = false
+
+  const existingManifest = await readManifest(scopeConfig)
+  if (skillName in existingManifest.skills) {
+    if (!options.force) {
+      throw new Error(
+        `Skill "${skillName}" is already installed at ${options.scope} scope. Use --force to overwrite.`
+      )
+    }
+    alreadyExisted = true
+    await rm(targetDir, { recursive: true, force: true })
+  }
+
+  if (!options.dryRun) {
+    await mkdir(scopeConfig.skillsDir, { recursive: true })
+    await cp(absSource, targetDir, { recursive: true })
+
+    const installed: InstalledSkill = {
+      name: skillName,
+      version: '1.0.0',
+      source: options.sourceUrl ? 'community' : 'local',
+      sourceUrl: options.sourceUrl,
+      installedAt: new Date().toISOString(),
+      specVersion: SPEC_VERSION,
+      score: validation.score,
+      path: path.join('skills', skillName),
+    }
+
+    await addSkillToManifest(scopeConfig, installed)
+  }
+
+  return {
+    skillName,
+    scope: options.scope,
+    installedPath: targetDir,
+    validation,
+    alreadyExisted,
+  }
+}
