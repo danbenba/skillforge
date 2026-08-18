@@ -62,3 +62,14 @@ export async function readManifest(scopeConfig: ScopeConfig): Promise<SkillManif
     )
   }
 }
+
+export async function writeManifest(
+  scopeConfig: ScopeConfig,
+  manifest: SkillManifest
+): Promise<void> {
+  await mkdir(path.dirname(scopeConfig.manifestPath), { recursive: true })
+  const tmp = `${scopeConfig.manifestPath}.tmp`
+  const content = JSON.stringify({ ...manifest, updatedAt: new Date().toISOString() }, null, 2)
+  await writeFile(tmp, content, 'utf8')
+  await writeFile(scopeConfig.manifestPath, content, 'utf8')
+}
