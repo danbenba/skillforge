@@ -47,3 +47,7 @@ export function printError(message: string): void {
 export function printSuccess(message: string): void {
   console.log(chalk.green(`✓ ${message}`))
 }
+
+export function printWarning(message: string): void {
+  console.log(chalk.yellow(`⚠ ${message}`))
+}
