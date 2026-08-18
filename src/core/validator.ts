@@ -310,3 +310,51 @@ interface FrontmatterResult {
   frontmatterEndLine: number
   parseError: string | null
 }
+
+function extractFrontmatter(content: string, lines: string[]): FrontmatterResult {
+  if (!lines[0]?.trimEnd().startsWith('---')) {
+    return {
+      frontmatter: null,
+      frontmatterEndLine: 0,
+      parseError: 'Missing YAML frontmatter: file must start with ---',
+    }
+  }
+
+  let endIndex = -1
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i].trimEnd() === '---') {
+      endIndex = i
+      break
+    }
+  }
+
+  if (endIndex === -1) {
+    return {
+      frontmatter: null,
+      frontmatterEndLine: 0,
+      parseError: 'Unclosed YAML frontmatter: missing closing ---',
+    }
+  }
+
+  const yamlContent = lines.slice(1, endIndex).join('\n')
+
+  try {
+    const doc = parseDocument(yamlContent)
+    if (doc.errors.length > 0) {
+      const err = doc.errors[0]
+      return {
+        frontmatter: null,
+        frontmatterEndLine: endIndex,
+        parseError: `YAML parse error: ${err.message}`,
+      }
+    }
+    const fm = doc.toJS() as SkillFrontmatter
+    return { frontmatter: fm, frontmatterEndLine: endIndex, parseError: null }
+  } catch (e) {
+    return {
+      frontmatter: null,
+      frontmatterEndLine: endIndex,
+      parseError: `YAML parse error: ${e instanceof Error ? e.message : String(e)}`,
+    }
+  }
+}
