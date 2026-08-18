@@ -211,3 +211,8 @@ function fatal(skillsetPath: string, message: string): SkillsetValidationResult 
     errorCount: 1,
   }
 }
+
+interface FrontmatterResult {
+  frontmatter: SkillsetFrontmatter | null
+  parseError: string | null
+}
