@@ -35,3 +35,7 @@ export function renderValidationReport(result: ValidationResult): string {
 export function printValidationReport(result: ValidationResult): void {
   console.log(renderValidationReport(result))
 }
+
+export function printJson(data: unknown): void {
+  console.log(JSON.stringify(data, null, 2))
+}
