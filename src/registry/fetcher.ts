@@ -21,3 +21,8 @@ export interface SkillBundle {
   files: BundleFile[]
   notes: string[]
 }
+
+export interface ResolvedSource {
+  url: string
+  registryName?: string
+}
