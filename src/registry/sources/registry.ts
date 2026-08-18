@@ -19,3 +19,14 @@ export interface RegistrySkill {
   install_count: number
   published_at: string
 }
+
+export interface SearchOptions {
+  q?: string
+  tier?: 'verified' | 'community'
+  min_score?: number
+  spec_version?: string
+  tags?: string
+  sort?: 'installs' | 'score' | 'recent' | 'name'
+  limit?: number
+  offset?: number
+}
