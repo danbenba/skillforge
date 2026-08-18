@@ -12,3 +12,16 @@ export interface InstalledSkill {
   score: number
   path: string
 }
+
+export interface InstalledSkillset {
+  name: string
+  version: string
+  source: SkillSource
+  sourceUrl?: string
+  installedAt: string
+  specVersion: string
+  score: number
+  path: string
+  embeddedSkills: string[]
+  remoteSkills: string[]
+}
