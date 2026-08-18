@@ -47,3 +47,18 @@ export function createEmptyManifest(scope: SkillManifest['scope']): SkillManifes
     updatedAt: new Date().toISOString(),
   }
 }
+
+export async function readManifest(scopeConfig: ScopeConfig): Promise<SkillManifest> {
+  try {
+    const raw = await readFile(scopeConfig.manifestPath, 'utf8')
+    const parsed = JSON.parse(raw)
+    return SkillManifestSchema.parse(parsed) as SkillManifest
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
+      return createEmptyManifest(scopeConfig.level)
+    }
+    throw new Error(
+      `Failed to read manifest at ${scopeConfig.manifestPath}: ${e instanceof Error ? e.message : String(e)}`
+    )
+  }
+}
