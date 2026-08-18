@@ -188,3 +188,14 @@ export async function getSkillset(name: string): Promise<RegistrySkillset> {
 export async function getSkillsetInstallInfo(name: string): Promise<SkillsetInstallInfo> {
   return registryFetch<SkillsetInstallInfo>(`/skillsets/${encodeURIComponent(name)}/install`)
 }
+
+export async function publishSkillset(
+  token: string,
+  body: PublishSkillsetBody
+): Promise<PublishSkillsetResponse> {
+  return registryFetch<PublishSkillsetResponse>('/skillsets', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  })
+}
