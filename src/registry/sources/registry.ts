@@ -199,3 +199,13 @@ export async function publishSkillset(
     body: JSON.stringify(body),
   })
 }
+
+export async function updateSkillset(
+  token: string,
+  name: string
+): Promise<PublishSkillsetResponse> {
+  return registryFetch<PublishSkillsetResponse>(`/skillsets/${encodeURIComponent(name)}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
