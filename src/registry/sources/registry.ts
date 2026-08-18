@@ -107,3 +107,10 @@ export async function publishSkill(token: string, body: PublishBody): Promise<Pu
     body: JSON.stringify(body),
   })
 }
+
+export async function updateSkill(token: string, name: string): Promise<PublishResponse> {
+  return registryFetch<PublishResponse>(`/skills/${encodeURIComponent(name)}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
