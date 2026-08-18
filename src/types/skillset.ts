@@ -14,3 +14,15 @@ export interface SkillsetFrontmatter {
   spec_version?: string
   skills?: RemoteSkillRef[]
 }
+
+export interface SkillsetValidationResult {
+  skillset: string
+  score: number
+  diagnostics: ValidationDiagnostic[]
+  specVersion: string
+  embeddedSkills: string[]
+  remoteSkills: RemoteSkillRef[]
+  passCount: number
+  warnCount: number
+  errorCount: number
+}
