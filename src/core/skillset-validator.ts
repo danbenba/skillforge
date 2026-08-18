@@ -197,3 +197,17 @@ export async function validateSkillset(skillsetPath: string): Promise<SkillsetVa
     errorCount: diagnostics.filter((d) => d.severity === 'error').length,
   }
 }
+
+function fatal(skillsetPath: string, message: string): SkillsetValidationResult {
+  return {
+    skillset: path.basename(skillsetPath),
+    score: 0,
+    diagnostics: [{ severity: 'error', message, check: 'skillset-exists' }],
+    specVersion: SKILLSET_SPEC_VERSION,
+    embeddedSkills: [],
+    remoteSkills: [],
+    passCount: 0,
+    warnCount: 0,
+    errorCount: 1,
+  }
+}
