@@ -43,3 +43,7 @@ export function printJson(data: unknown): void {
 export function printError(message: string): void {
   console.error(chalk.red(`Error: ${message}`))
 }
+
+export function printSuccess(message: string): void {
+  console.log(chalk.green(`✓ ${message}`))
+}
