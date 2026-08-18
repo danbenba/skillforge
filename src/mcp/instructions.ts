@@ -24,3 +24,13 @@ async function findDocsFile(fileName: string): Promise<string | null> {
   }
   return null
 }
+
+export async function shortInstructions(): Promise<string> {
+  const file = await findDocsFile('INSTRUCTIONS_SHORT.md')
+  if (!file) return FALLBACK_SHORT
+  try {
+    return await readFile(file, 'utf8')
+  } catch {
+    return FALLBACK_SHORT
+  }
+}
