@@ -136,3 +136,65 @@ async function runRegistrySkillsetInstall(
     await rm(tmpDir, { recursive: true, force: true })
   }
 }
+
+async function runGitSkillsetInstall(
+  gitUrl: string,
+  options: { scope: ScopeLevel; force: boolean; json: boolean }
+): Promise<void> {
+  const { mkdtemp, rm } = await import('node:fs/promises')
+  const path = await import('node:path')
+  const os = await import('node:os')
+  const { simpleGit } = await import('simple-git')
+  const { parseGitUrl } = await import('../../registry/sources/github.js')
+
+  const spinner = options.json ? null : ora(`Cloning ${gitUrl}...`).start()
+  const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-skillset-'))
+
+  try {
+    const parsed = parseGitUrl(gitUrl)
+    const git = simpleGit()
+    const cloneOptions = parsed.branch
+      ? ['--branch', parsed.branch, '--depth', '1']
+      : ['--depth', '1']
+    await git.clone(parsed.repoUrl, tmpDir, cloneOptions)
+
+    const searchRoot = parsed.subPath ? path.join(tmpDir, parsed.subPath) : tmpDir
+
+    if (spinner) spinner.text = `Installing skillset from ${gitUrl}...`
+
+    const result = await installSkillsetFromPath(searchRoot, {
+      scope: options.scope,
+      force: options.force,
+      sourceUrl: gitUrl,
+    })
+
+    if (spinner)
+      spinner.succeed(`Installed skillset "${result.skillsetName}" at ${result.scope} scope`)
+
+    if (options.json) {
+      printJson({
+        installed: true,
+        skillsetName: result.skillsetName,
+        scope: result.scope,
+        score: result.validation.score,
+        embeddedSkills: result.embeddedResults.map((r) => r.skillName),
+        remoteSkills: result.remoteResults.map((r) => r.skillName),
+      })
+    } else {
+      printSuccess(`Score: ${result.validation.score}/100`)
+      const allSkills = [
+        ...result.embeddedResults.map((r) => r.skillName),
+        ...result.remoteResults.map((r) => r.skillName),
+      ]
+      if (allSkills.length > 0) {
+        printInfo(`  Skills installed: ${allSkills.join(', ')}`)
+      }
+    }
+  } catch (e) {
+    if (spinner) spinner.fail()
+    printError(e instanceof Error ? e.message : String(e))
+    process.exit(1)
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true })
+  }
+}
