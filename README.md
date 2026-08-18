@@ -34,3 +34,15 @@ Skills are folders with a `SKILL.md` file that teach Claude how to do a specific
 
 Skills are also exposed as MCP resources (`skill://<name>/SKILL.md` and `skill://index.json`) for clients that support skills over MCP ([SEP-2640](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2640)).
 
+## Quick start (claude.ai)
+
+You need the server deployed somewhere public first (see [Deployment](#deployment)).
+
+1. Open claude.ai, go to **Settings > Connectors > Add custom connector**.
+2. Paste your server URL followed by `/mcp`, for example `https://skillforge.example.com/mcp`. No authentication is needed unless you set a token.
+3. Start a chat and ask something like "find me a skill for writing changelogs and install it".
+
+Claude first calls `skillforge_start`, which returns the operating playbook (selection method, comparison rubric, security checklist). Then it searches, compares at least two candidates, and activates the best one. The playbook lives in [docs/PLAYBOOK.md](docs/PLAYBOOK.md) if you want to read what Claude reads.
+
+Note: claude.ai drops the MCP `instructions` field for custom connectors, which is why the playbook ships as a tool instead.
+
