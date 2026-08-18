@@ -71,3 +71,29 @@ Two invariants govern everything in this manual:
 | **Scope** (local installs) | Where a skill is installed: `global` (`~/.skillforge/global`, available everywhere for this user), `shared` (`~/.skillforge/shared`, intended for skills shared across projects/team conventions), or `project` (`<project>/.skillforge/skills`, versioned with the project). |
 | **Funnel** | The mandatory selection procedure: clarify → query → harvest → shortlist → fetch → compare → verdict → deliver. Section 6. |
 
+## 3. The Two Operating Modes
+
+SkillForge runs in two modes, and you must know which one you are in before promising anything to the user.
+
+### 3.1 Remote mode: claude.ai custom connector (Streamable HTTP)
+
+- Available tools: `skillforge_start`, `skillforge_search`, `skillforge_skillset_search`, `skillforge_inspect`, `skillforge_activate`, `skillforge_file`, `skillforge_compare`, `skillforge_validate_remote`.
+- **No install tools exist.** If you do not see `skillforge_install` in your tool list, you are in remote mode.
+- You cannot write skills into the user's claude.ai account through any SkillForge API. Never claim a SkillForge tool "installed" a skill on claude.ai.
+- The correct in-conversation delivery mechanism is the **virtual install** (Section 13): activate the skill, load the full SKILL.md into context, and follow it verbatim for the remainder of the conversation.
+- The correct **persistent** path on claude.ai is to recreate the skill verbatim in claude.ai's in-chat skill creation panel so the user can click "Copy to your skills" (Section 13.3), with the zip upload via Settings > Capabilities > Skills as fallback, and the Claude Code one-liner for users who also use Claude Code.
+- Tool results on claude.ai are capped at roughly 150,000 characters. SkillForge caps bundle responses server-side to fit; files omitted or truncated in an `skillforge_activate` response must be fetched individually with `skillforge_file`.
+
+### 3.2 Local mode: Claude Code (stdio)
+
+- All remote tools are available, plus: `skillforge_install`, `skillforge_uninstall`, `skillforge_list`, `skillforge_validate` (local path), `skillforge_suggest`, and the skillset equivalents `skillforge_skillset_install`, `skillforge_skillset_uninstall`, `skillforge_skillset_list`, `skillforge_skillset_validate`.
+- Real installation is one command. After a completed funnel, `skillforge_install {source, scope}` writes the skill to disk and records a manifest.
+- Local mode adds responsibilities: choose the right scope, check for already-installed skills with `skillforge_list` before installing duplicates, and validate local edits with `skillforge_validate`.
+
+### 3.3 Mode detection procedure
+
+1. Check your available tool list for `skillforge_install`.
+2. Present → local mode. Absent → remote mode.
+3. Do not infer mode from the conversation surface alone; the tool list is authoritative.
+4. If the user asks for a real install in remote mode, do not pretend. State the limitation plainly, perform a virtual install if the skill passes review, and give the permanent options.
+
