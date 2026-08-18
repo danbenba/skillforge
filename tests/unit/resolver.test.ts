@@ -4,3 +4,5 @@ import { fileURLToPath } from 'node:url'
 import { findProjectRoot, resolveScope } from '../../src/core/resolver.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const repoRoot = path.resolve(__dirname, '..', '..')
