@@ -37,3 +37,11 @@ export interface SearchResponse {
   limit: number
   offset: number
 }
+
+export interface InstallInfo {
+  name: string
+  source_url: string
+  score: number | null
+  spec_version: string
+  trust_tier: 'verified' | 'community'
+}
