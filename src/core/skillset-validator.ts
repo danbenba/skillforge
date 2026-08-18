@@ -282,3 +282,12 @@ async function checkUnknownDirs(
   } catch {}
   return unknown
 }
+
+function isValidGitHubUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.hostname === 'github.com' && parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
