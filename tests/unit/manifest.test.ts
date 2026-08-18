@@ -47,3 +47,11 @@ describe('createEmptyManifest', () => {
     expect(m.skillforgeVersion).toBe('1')
   })
 })
+
+describe('readManifest', () => {
+  it('returns empty manifest when file does not exist', async () => {
+    const m = await readManifest(scopeConfig)
+    expect(m.skills).toEqual({})
+    expect(m.scope).toBe('project')
+  })
+})
