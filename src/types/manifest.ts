@@ -25,3 +25,11 @@ export interface InstalledSkillset {
   embeddedSkills: string[]
   remoteSkills: string[]
 }
+
+export interface SkillManifest {
+  skillforgeVersion: string
+  scope: ScopeLevel
+  skills: Record<string, InstalledSkill>
+  skillsets: Record<string, InstalledSkillset>
+  updatedAt: string
+}
