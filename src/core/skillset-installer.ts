@@ -15,3 +15,13 @@ export interface SkillsetInstallOptions {
   dryRun?: boolean
   sourceUrl?: string
 }
+
+export interface SkillsetInstallResult {
+  skillsetName: string
+  scope: ScopeLevel
+  installedPath: string
+  validation: SkillsetValidationResult
+  embeddedResults: InstallResult[]
+  remoteResults: InstallResult[]
+  alreadyExisted: boolean
+}
