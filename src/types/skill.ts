@@ -18,3 +18,10 @@ export interface SkillPackage {
 }
 
 export type ValidationSeverity = 'error' | 'warning' | 'pass'
+
+export interface ValidationDiagnostic {
+  severity: ValidationSeverity
+  line?: number
+  message: string
+  check: string
+}
