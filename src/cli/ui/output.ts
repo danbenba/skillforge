@@ -31,3 +31,7 @@ export function renderValidationReport(result: ValidationResult): string {
 
   return lines.join('\n')
 }
+
+export function printValidationReport(result: ValidationResult): void {
+  console.log(renderValidationReport(result))
+}
