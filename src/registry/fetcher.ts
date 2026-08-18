@@ -12,3 +12,12 @@ export interface BundleFile {
   content: string | null
   status: 'inline' | 'truncated' | 'omitted' | 'binary'
 }
+
+export interface SkillBundle {
+  skillName: string
+  source: string
+  sourceUrl: string
+  skillMd: string
+  files: BundleFile[]
+  notes: string[]
+}
