@@ -158,3 +158,8 @@ export interface PublishSkillsetBody {
   source_url: string
   tags?: string[]
 }
+
+export interface PublishSkillsetResponse {
+  skillset: RegistrySkillset
+  diagnostics: Array<{ level: string; line?: number; message: string }>
+}
