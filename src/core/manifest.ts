@@ -73,3 +73,12 @@ export async function writeManifest(
   await writeFile(tmp, content, 'utf8')
   await writeFile(scopeConfig.manifestPath, content, 'utf8')
 }
+
+export async function addSkillToManifest(
+  scopeConfig: ScopeConfig,
+  skill: InstalledSkill
+): Promise<void> {
+  const manifest = await readManifest(scopeConfig)
+  manifest.skills[skill.name] = skill
+  await writeManifest(scopeConfig, manifest)
+}
