@@ -29,3 +29,11 @@ const InstalledSkillsetSchema = z.object({
   embeddedSkills: z.array(z.string()),
   remoteSkills: z.array(z.string()),
 })
+
+const SkillManifestSchema = z.object({
+  skillforgeVersion: z.string(),
+  scope: z.enum(['global', 'shared', 'project']),
+  skills: z.record(InstalledSkillSchema),
+  skillsets: z.record(InstalledSkillsetSchema).default({}),
+  updatedAt: z.string(),
+})
