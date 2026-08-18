@@ -25,3 +25,16 @@ function makeScopeConfig(level: ScopeLevel, rootPath: string): ScopeConfig {
     skillsetsDir: path.join(rootPath, SKILLSETS_DIR),
   }
 }
+
+export async function resolveScope(level: ScopeLevel, cwd?: string): Promise<ScopeConfig> {
+  switch (level) {
+    case 'global':
+      return makeScopeConfig('global', globalBase())
+    case 'shared':
+      return makeScopeConfig('shared', sharedBase())
+    case 'project': {
+      const projectRoot = await findProjectRoot(cwd ?? process.cwd())
+      return makeScopeConfig('project', path.join(projectRoot, SKILLFORGE_DIR))
+    }
+  }
+}
