@@ -26,3 +26,24 @@ export interface ResolvedSource {
   url: string
   registryName?: string
 }
+
+const BINARY_EXTENSIONS = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+  '.ico',
+  '.pdf',
+  '.zip',
+  '.tar',
+  '.gz',
+  '.woff',
+  '.woff2',
+  '.ttf',
+  '.otf',
+  '.mp3',
+  '.mp4',
+  '.wav',
+  '.bin',
+])
