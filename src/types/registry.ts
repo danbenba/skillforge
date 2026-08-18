@@ -10,3 +10,9 @@ export interface RegistryEntry {
   tags: string[]
   publishedAt: string
 }
+
+export interface SearchResult {
+  entries: RegistryEntry[]
+  query: string
+  total: number
+}
