@@ -114,3 +114,10 @@ export async function updateSkill(token: string, name: string): Promise<PublishR
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function deleteSkill(token: string, name: string): Promise<void> {
+  await registryFetch<void>(`/skills/${encodeURIComponent(name)}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
