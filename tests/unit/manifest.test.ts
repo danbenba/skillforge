@@ -24,3 +24,7 @@ beforeEach(async () => {
     skillsDir: path.join(tmpDir, 'skills'),
   }
 })
+
+afterEach(async () => {
+  await rm(tmpDir, { recursive: true, force: true })
+})
