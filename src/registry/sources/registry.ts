@@ -145,3 +145,10 @@ export interface SkillsetInstallInfo {
   trust_tier: 'verified' | 'community'
   skills: Array<{ name: string; source_url: string }>
 }
+
+export interface SkillsetSearchResponse {
+  skillsets: RegistrySkillset[]
+  total: number
+  limit: number
+  offset: number
+}
