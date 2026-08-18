@@ -82,3 +82,15 @@ export async function addSkillToManifest(
   manifest.skills[skill.name] = skill
   await writeManifest(scopeConfig, manifest)
 }
+
+export async function removeSkillFromManifest(
+  scopeConfig: ScopeConfig,
+  skillName: string
+): Promise<void> {
+  const manifest = await readManifest(scopeConfig)
+  if (!(skillName in manifest.skills)) {
+    throw new Error(`Skill "${skillName}" not found in ${scopeConfig.level} manifest`)
+  }
+  delete manifest.skills[skillName]
+  await writeManifest(scopeConfig, manifest)
+}
