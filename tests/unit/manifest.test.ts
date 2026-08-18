@@ -13,3 +13,4 @@ import type { ScopeConfig } from '../../src/types/scope.js'
 import type { InstalledSkill } from '../../src/types/manifest.js'
 
 let tmpDir: string
+let scopeConfig: ScopeConfig
