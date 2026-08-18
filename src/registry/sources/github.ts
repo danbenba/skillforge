@@ -68,3 +68,29 @@ export async function installFromGitUrl(
     await rm(tmpDir, { recursive: true, force: true })
   }
 }
+
+export async function findSkillFolders(root: string): Promise<string[]> {
+  const results: string[] = []
+
+  try {
+    await stat(path.join(root, 'SKILL.md'))
+    results.push(root)
+    return results
+  } catch {}
+
+  try {
+    const entries = await readdir(root, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      if (entry.name.startsWith('.')) continue
+
+      const childPath = path.join(root, entry.name)
+      try {
+        await stat(path.join(childPath, 'SKILL.md'))
+        results.push(childPath)
+      } catch {}
+    }
+  } catch {}
+
+  return results
+}
