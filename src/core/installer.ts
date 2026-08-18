@@ -15,3 +15,11 @@ export interface InstallOptions {
 
   onMultipleSkills?: (names: string[]) => Promise<string>
 }
+
+export interface InstallResult {
+  skillName: string
+  scope: ScopeLevel
+  installedPath: string
+  validation: ValidationResult
+  alreadyExisted: boolean
+}
