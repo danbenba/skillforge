@@ -367,3 +367,8 @@ function findFieldLine(lines: string[], field: string, maxLine: number): number 
   }
   return undefined
 }
+
+interface SubdirResult {
+  unknownDirs: string[]
+  hasReadme: boolean
+}
