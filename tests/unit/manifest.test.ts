@@ -38,3 +38,12 @@ const makeSkill = (name: string): InstalledSkill => ({
   score: 90,
   path: `skills/${name}`,
 })
+
+describe('createEmptyManifest', () => {
+  it('creates a manifest with no skills', () => {
+    const m = createEmptyManifest('project')
+    expect(m.scope).toBe('project')
+    expect(m.skills).toEqual({})
+    expect(m.skillforgeVersion).toBe('1')
+  })
+})
