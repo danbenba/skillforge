@@ -163,3 +163,20 @@ export interface PublishSkillsetResponse {
   skillset: RegistrySkillset
   diagnostics: Array<{ level: string; line?: number; message: string }>
 }
+
+export async function searchSkillsets(
+  options: SearchOptions = {}
+): Promise<SkillsetSearchResponse> {
+  const params = new URLSearchParams()
+  if (options.q) params.set('q', options.q)
+  if (options.tier) params.set('tier', options.tier)
+  if (options.min_score !== undefined) params.set('min_score', String(options.min_score))
+  if (options.spec_version) params.set('spec_version', options.spec_version)
+  if (options.tags) params.set('tags', options.tags)
+  if (options.sort) params.set('sort', options.sort)
+  if (options.limit !== undefined) params.set('limit', String(options.limit))
+  if (options.offset !== undefined) params.set('offset', String(options.offset))
+
+  const qs = params.toString()
+  return registryFetch<SkillsetSearchResponse>(`/skillsets${qs ? `?${qs}` : ''}`)
+}
