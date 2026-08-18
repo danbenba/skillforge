@@ -363,3 +363,82 @@ Search both whenever any of these hold: the request lists more than one capabili
 - User asks "what's installed" (local) → `skillforge_list`, not search.
 - User wants a skill that would encode *their* project's private conventions → the registry will not have it; after one confirming search, move to `skillforge_suggest` (local) or offer to draft one.
 
+## 8. The Weighted Scoring Rubric
+
+Score every surviving candidate against the fetched contents using these criteria and weights. The output is a 0-100 weighted total per candidate, presented in the comparison table (Section 10). The rubric disciplines your judgment; it does not replace it: always sanity-check the total against your reading, and say so when they disagree.
+
+| # | Criterion | Weight | What you are scoring |
+|---|---|---|---|
+| 1 | Task fit | 35 | Do the skill's *instructions* actually cover the user's need, as captured in your target sentence? |
+| 2 | Instruction quality | 20 | Specific, actionable, exampled, edge-case-aware, vs vague prose. |
+| 3 | Trust tier and provenance | 10 | Verified vs community; identifiable author; source repo coherent with the registry record. |
+| 4 | Validation score | 5 | The 0-100 format score, mapped directly. |
+| 5 | Popularity (install_count) | 5 | Adoption signal, discounted for its biases. |
+| 6 | Recency / maintenance | 5 | Published or updated recently enough for its domain; signs of upkeep. |
+| 7 | Scope discipline | 5 | Does one job; no scope creep. |
+| 8 | Token weight | 7.5 | Context cost of the loaded skill; progressive disclosure. |
+| 9 | Dependency and script safety | 7.5 | Graded safety/portability of scripts and dependencies. (Hard security fails are not graded; they eliminate. Section 9.) |
+
+Scoring mechanics: score each criterion 0-10, multiply by weight/10, sum. Round to integers; do not report decimals as if they were precision.
+
+### 8.1 Task fit (35): the dominant criterion
+
+Read the SKILL.md body and ask: if I follow these instructions on the user's actual task, do they take me to the finish line?
+
+- **9-10:** the instructions address the exact task including its variants; nothing important is left to improvisation.
+- **6-8:** covers the core task; some user-specific aspects need improvisation around the skill.
+- **3-5:** adjacent. Covers a sibling task or only part of the need; using it would mean fighting it.
+- **0-2:** description promised, body does not deliver; or covers a different task entirely.
+
+Judge fit from the **body**, never from the description. Description-body mismatch is common and is itself a trust signal (note it under criterion 3). No candidate with task fit ≤ 3 may be recommended regardless of its total: a beautifully engineered skill for the wrong task is the wrong skill.
+
+### 8.2 Instruction quality (20)
+
+High: imperative voice; numbered procedures; concrete examples of inputs and expected outputs; named edge cases with handling; explicit failure behavior ("if X fails, do Y"); defined stopping conditions. Low: aspirational prose ("ensure high quality"), unordered walls of text, instructions that assume unstated context, no examples, no boundaries. A useful probe: could a competent agent with no other context execute this deterministically? If two readings of the body would produce two different behaviors, quality is low.
+
+### 8.3 Trust tier and provenance (10)
+
+- `verified` starts at 8-10; `community` starts at 4-7 and moves with evidence: a named author with a coherent public repo, a real commit history, and a README that matches the skill raises it; an anonymous account, a repo created yesterday containing only this skill, or description/body mismatch lowers it.
+- Provenance checks that cost you nothing: does `source_url` match the author? Does `skillforge_inspect` show a version history or a single drive-by publish?
+- Tier is a prior, not a verdict. A verified skill still gets the full security review; a community skill with clean scripts and a solid author can outscore it overall.
+
+### 8.4 Validation score (5)
+
+Map the registry/validator score directly (100 → 10). Low weight by design: format conformance is table stakes, not quality. Exception rule: a score below ~50 is not a "5-point criterion" problem: it signals a malformed package (broken refs, invalid frontmatter) that may not even load; treat < 50 as disqualifying unless diagnostics show only cosmetic issues (Section 17).
+
+### 8.5 Popularity (5) and its biases
+
+`install_count` measures adoption, which correlates with usefulness, weakly. Known biases you must discount for:
+
+- **Age bias:** old skills accumulate installs; a 6-month head start beats a better design.
+- **Listing bias:** skills that ranked first in search accumulate installs because they ranked first (rich-get-richer).
+- **Task-population bias:** generic tasks (commit messages) accrue installs a niche task (LaTeX tables) never could; never compare raw counts across different task populations.
+
+Therefore: within a shortlist, treat install_count as a coarse tiering (≈0 / modest / heavy adoption), not a ranking. **Never let popularity override task fit or instruction quality**: the explicit purpose of this rubric's weighting is that a new-but-better skill (fit 9, installs 12) beats an old-but-worse one (fit 6, installs 40,000). Adoption is 5 points; fit is 35.
+
+### 8.6 Recency and maintenance (5)
+
+Judge staleness relative to the domain's speed: a skill about a fast-moving API that predates that API's current major version is likely wrong in load-bearing places; a timeless skill (writing style, review checklists) barely decays. Signals of maintenance: version history in `skillforge_inspect`, recent `published_at`, changelog in the repo. Score down hard when the body references deprecated tools or dead URLs.
+
+### 8.7 Scope discipline (5)
+
+A skill should do one job. Scope creep (one skill that lints, formats, deploys, and writes tweets) costs you three ways: bigger token load, higher conflict probability with other loaded skills, and diluted instructions (breadth bought with vagueness). Prefer the sharp single-purpose skill; if the user needs the breadth, that is what skillsets are for. Score creep down even when the extra scope seems harmless.
+
+### 8.8 Token weight (7.5)
+
+Every loaded skill rents context for the rest of the conversation and taxes every subsequent reasoning step.
+
+- Estimate from `skillforge_activate` sizes: SKILL.md under ~2,000 words is comfortable; 2,000-5,000 needs justification; beyond that, the skill must be exceptional or built with progressive disclosure.
+- **Reward progressive disclosure:** a 700-word SKILL.md with well-indexed `references/` you can pull via `skillforge_file` when needed outscores a 6,000-word monolith of equal content. On claude.ai the ~150k-character tool-result cap makes monoliths actively fragile (truncation).
+- Between candidates of comparable fit, the lighter one wins; this is a common tie-breaker (Section 11).
+
+### 8.9 Dependency and script safety (7.5): the graded part
+
+Section 9's hard checks eliminate candidates outright. This criterion grades what survives:
+
+- **10:** no scripts, or scripts that are short, readable, offline, and touch only their own working directory.
+- **7-9:** scripts with reasonable, pinned, well-known dependencies; clearly scoped side effects; network calls only to obviously task-relevant endpoints, disclosed in SKILL.md.
+- **4-6:** heavyweight or unpinned dependency trees; scripts assuming tools the user may not have; side effects broader than the task strictly requires.
+- **1-3:** scripts you cannot fully assess (complex enough that review is uncertain), even if nothing is overtly malicious. Uncertainty is a cost; say so in the table.
+- Also grade portability: scripts requiring execution the current host cannot provide reduce *effective* fit in this environment; note it under both this criterion and task fit.
+
