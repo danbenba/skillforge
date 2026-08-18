@@ -216,3 +216,36 @@ interface FrontmatterResult {
   frontmatter: SkillsetFrontmatter | null
   parseError: string | null
 }
+
+function extractFrontmatter(content: string, lines: string[]): FrontmatterResult {
+  if (!lines[0]?.trimEnd().startsWith('---')) {
+    return { frontmatter: null, parseError: 'Missing YAML frontmatter: file must start with ---' }
+  }
+
+  let endIndex = -1
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i].trimEnd() === '---') {
+      endIndex = i
+      break
+    }
+  }
+
+  if (endIndex === -1) {
+    return { frontmatter: null, parseError: 'Unclosed YAML frontmatter: missing closing ---' }
+  }
+
+  const yamlContent = lines.slice(1, endIndex).join('\n')
+
+  try {
+    const doc = parseDocument(yamlContent)
+    if (doc.errors.length > 0) {
+      return { frontmatter: null, parseError: `YAML parse error: ${doc.errors[0].message}` }
+    }
+    return { frontmatter: doc.toJS() as SkillsetFrontmatter, parseError: null }
+  } catch (e) {
+    return {
+      frontmatter: null,
+      parseError: `YAML parse error: ${e instanceof Error ? e.message : String(e)}`,
+    }
+  }
+}
