@@ -12,3 +12,4 @@ import { registerUpdate } from './commands/update.js'
 import { registerConfig } from './commands/config.js'
 
 const require = createRequire(import.meta.url)
+const { version } = require('../../package.json') as { version: string }
