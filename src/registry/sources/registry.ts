@@ -121,3 +121,18 @@ export async function deleteSkill(token: string, name: string): Promise<void> {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export interface RegistrySkillset {
+  name: string
+  description: string
+  author: string | null
+  source_url: string
+  trust_tier: 'verified' | 'community'
+  score: number | null
+  spec_version: string
+  tags: string[]
+  skill_count: number
+  install_count: number
+  published_at: string
+  skills: Array<{ name: string; source_url: string }>
+}
