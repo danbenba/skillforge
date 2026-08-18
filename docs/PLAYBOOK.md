@@ -647,3 +647,14 @@ Several skills can be active at once (multiple real installs, or multiple virtua
 - **Do not average.** Two contradictory conventions blended produce output conforming to neither. Pick per precedence, and say which skill governed which decision.
 - **Prevent when possible.** Prefer one coherent skillset over an ad-hoc pile of overlapping skills (Section 11.4). On local mode, `skillforge_list` before installing tells you what a new skill will collide with.
 
+## 16. Skillset Handling
+
+A skillset stands or falls with its members. Procedure differences from single skills:
+
+1. **Discovery:** `skillforge_skillset_search`; run it whenever Section 7.4 triggers hold.
+2. **Evaluation:** activate the bundle and enumerate members. Score with the rubric at two levels: each member you'll actually use (task fit, quality, safety) and the set as a whole (coherence of conventions, dead weight, combined token cost). A set with one excellent member and four irrelevant ones loses to the excellent member alone.
+3. **Security:** review **every member**, including embedded skills and remote-referenced ones: a set is a bulk-trust decision, and one malicious member fails the whole set (recommend the clean members individually instead). Remote-referenced members deserve extra care: their content can change independently of the set's registry record; fetch what will actually be installed.
+4. **Delivery, local:** `skillforge_skillset_install` after per-member review; `skillforge_skillset_list` to audit; `skillforge_skillset_validate` for local sets; uninstall as a unit with `skillforge_skillset_uninstall`.
+5. **Delivery, remote:** virtually install only the members needed *now* (usually 1-2), not the entire set; context is finite. Name the set, say which members you loaded, and give persistence options for the set (zip path handles bundles; the panel path is per-skill).
+6. **Partial adoption is legitimate:** recommending two members of a five-skill set is often the right verdict; say that explicitly rather than forcing the all-or-nothing framing.
+
