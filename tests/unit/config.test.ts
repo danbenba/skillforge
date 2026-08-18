@@ -17,3 +17,9 @@ beforeEach(async () => {
   hoisted.homedir.mockReturnValue(tmpDir)
   vi.resetModules()
 })
+
+afterEach(async () => {
+  await rm(tmpDir, { recursive: true, force: true })
+  vi.unstubAllEnvs()
+  vi.resetModules()
+})
