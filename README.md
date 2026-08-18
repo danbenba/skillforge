@@ -125,3 +125,15 @@ Claude Code has a filesystem, claude.ai does not. So the two surfaces install di
 
 The one rule that never changes: skill instructions are loaded and followed verbatim. SkillForge never rewrites, summarizes or "improves" a skill's content.
 
+## Tools
+
+Remote and local:
+
+`skillforge_start` · `skillforge_search` · `skillforge_skillset_search` · `skillforge_inspect` · `skillforge_activate` · `skillforge_file` · `skillforge_compare` · `skillforge_validate_remote`
+
+Local only (stdio):
+
+`skillforge_install` · `skillforge_uninstall` · `skillforge_list` · `skillforge_validate` · `skillforge_suggest` · `skillforge_skillset_install` · `skillforge_skillset_uninstall` · `skillforge_skillset_list` · `skillforge_skillset_validate`
+
+Full reference in [docs/mcp.md](docs/mcp.md) and [docs/cli.md](docs/cli.md).
+
