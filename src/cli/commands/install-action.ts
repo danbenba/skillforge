@@ -117,3 +117,51 @@ async function runRegistryInstall(
     process.exit(1)
   }
 }
+
+async function runGitInstall(
+  gitUrl: string,
+  options: { scope: ScopeLevel; force: boolean; json: boolean }
+): Promise<void> {
+  const spinner = options.json ? null : ora(`Cloning ${gitUrl}...`).start()
+  try {
+    const { installFromGitUrl } = await import('../../registry/sources/github.js')
+    const { resolveScope } = await import('../../core/resolver.js')
+    const scopeConfig = await resolveScope(options.scope)
+    const result = await installFromGitUrl(gitUrl, scopeConfig, {
+      scope: options.scope,
+      force: options.force,
+      sourceUrl: gitUrl,
+      onMultipleSkills: async (names) => {
+        if (spinner) spinner.stop()
+        const { select } = await import('@inquirer/prompts')
+        return select({
+          message: 'Multiple skills found in repo. Which one would you like to install?',
+          choices: names.map((n) => ({ name: n, value: n })),
+        })
+      },
+    })
+
+    if (spinner) spinner.succeed(`Installed "${result.skillName}" at ${result.scope} scope`)
+
+    if (options.json) {
+      printJson({
+        installed: true,
+        skillName: result.skillName,
+        scope: result.scope,
+        score: result.validation.score,
+        diagnostics: result.validation.diagnostics,
+      })
+    } else {
+      if (result.validation.warnCount > 0 || result.validation.errorCount > 0) {
+        console.log('')
+        printValidationReport(result.validation)
+      } else {
+        printSuccess(`Score: ${result.validation.score}/100`)
+      }
+    }
+  } catch (e) {
+    if (spinner) spinner.fail()
+    printError(e instanceof Error ? e.message : String(e))
+    process.exit(1)
+  }
+}
