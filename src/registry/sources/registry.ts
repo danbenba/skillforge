@@ -76,3 +76,18 @@ async function registryFetch<T>(path: string, options?: RequestInit): Promise<T>
 
   return res.json() as Promise<T>
 }
+
+export async function searchRegistry(options: SearchOptions = {}): Promise<SearchResponse> {
+  const params = new URLSearchParams()
+  if (options.q) params.set('q', options.q)
+  if (options.tier) params.set('tier', options.tier)
+  if (options.min_score !== undefined) params.set('min_score', String(options.min_score))
+  if (options.spec_version) params.set('spec_version', options.spec_version)
+  if (options.tags) params.set('tags', options.tags)
+  if (options.sort) params.set('sort', options.sort)
+  if (options.limit !== undefined) params.set('limit', String(options.limit))
+  if (options.offset !== undefined) params.set('offset', String(options.offset))
+
+  const qs = params.toString()
+  return registryFetch<SearchResponse>(`/skills${qs ? `?${qs}` : ''}`)
+}
