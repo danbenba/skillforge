@@ -18,3 +18,5 @@ vi.mock('../../src/core/resolver.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../src/core/resolver.js')>()
   return { ...actual, resolveScope: mocks.resolveScope }
 })
+
+let tmpDir: string
