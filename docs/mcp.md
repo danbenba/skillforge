@@ -279,3 +279,11 @@ Search the SkillForge registry for skills.
 
 ---
 
+## Working Directory
+
+The MCP server resolves the `project` scope relative to its working directory when it starts. When launched by Claude Code, this is typically the project root.
+
+If you're using the server for a different project than where it started, pass an explicit `projectPath` to `skillforge_suggest`, or use absolute paths with `skillforge_install`.
+
+---
+
