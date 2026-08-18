@@ -5,3 +5,14 @@ import type { SkillManifest, InstalledSkill, InstalledSkillset } from '../types/
 import type { ScopeConfig } from '../types/scope.js'
 
 const MANIFEST_VERSION = '1'
+
+const InstalledSkillSchema = z.object({
+  name: z.string(),
+  version: z.string(),
+  source: z.enum(['official', 'community', 'local']),
+  sourceUrl: z.string().optional(),
+  installedAt: z.string(),
+  specVersion: z.string(),
+  score: z.number(),
+  path: z.string(),
+})
