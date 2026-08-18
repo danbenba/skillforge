@@ -11,3 +11,18 @@ export interface ParsedGitUrl {
   branch?: string
   subPath?: string
 }
+
+export function parseGitUrl(raw: string): ParsedGitUrl {
+  let url = raw.replace(/^git\+/, '')
+
+  const treeMatch = url.match(/^(https?:\/\/[^/]+\/[^/]+\/[^/]+)\/tree\/([^/]+)(\/.*)?$/)
+  if (treeMatch) {
+    return {
+      repoUrl: treeMatch[1],
+      branch: treeMatch[2],
+      subPath: treeMatch[3]?.replace(/^\//, ''),
+    }
+  }
+
+  return { repoUrl: url }
+}
