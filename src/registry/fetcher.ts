@@ -84,3 +84,26 @@ export async function withClonedSource<T>(
     await rm(tmpDir, { recursive: true, force: true })
   }
 }
+
+async function walkFiles(root: string): Promise<string[]> {
+  const out: string[] = []
+  async function visit(dir: string): Promise<void> {
+    let entries
+    try {
+      entries = await readdir(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+    for (const entry of entries) {
+      if (SKIPPED_DIRS.has(entry.name)) continue
+      const p = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        await visit(p)
+      } else if (entry.isFile()) {
+        out.push(p)
+      }
+    }
+  }
+  await visit(root)
+  return out.sort()
+}
