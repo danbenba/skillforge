@@ -107,3 +107,51 @@ async function walkFiles(root: string): Promise<string[]> {
   await visit(root)
   return out.sort()
 }
+
+export async function fetchSkillBundle(
+  source: string,
+  wantedFiles?: string[]
+): Promise<SkillBundle> {
+  const env = readServerEnv()
+  return withClonedSource(source, async (folder, resolved) => {
+    const skillMdPath = path.join(folder, 'SKILL.md')
+    const skillMd = await readFile(skillMdPath, 'utf8')
+    const notes: string[] = []
+    const files: BundleFile[] = []
+    let budget = env.bundleTotalLimit - Buffer.byteLength(skillMd, 'utf8')
+
+    for (const filePath of await walkFiles(folder)) {
+      const rel = path.relative(folder, filePath)
+      if (rel === 'SKILL.md') continue
+      const info = await stat(filePath)
+      const ext = path.extname(rel).toLowerCase()
+      if (BINARY_EXTENSIONS.has(ext)) {
+        files.push({ path: rel, size: info.size, content: null, status: 'binary' })
+        continue
+      }
+      if (wantedFiles && wantedFiles.length > 0 && !wantedFiles.includes(rel)) {
+        files.push({ path: rel, size: info.size, content: null, status: 'omitted' })
+        continue
+      }
+      if (info.size > env.bundleFileLimit || info.size > budget) {
+        files.push({ path: rel, size: info.size, content: null, status: 'truncated' })
+        notes.push(
+          `File "${rel}" (${info.size} bytes) exceeds the inline budget: fetch it alone with skillforge_file.`
+        )
+        continue
+      }
+      const content = await readFile(filePath, 'utf8')
+      budget -= info.size
+      files.push({ path: rel, size: info.size, content, status: 'inline' })
+    }
+
+    return {
+      skillName: path.basename(folder),
+      source,
+      sourceUrl: resolved.url.replace(/^git\+/, ''),
+      skillMd,
+      files,
+      notes,
+    }
+  })
+}
