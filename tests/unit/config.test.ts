@@ -62,3 +62,33 @@ describe('writeConfig', () => {
     expect(config.defaultScope).toBe('project')
   })
 })
+
+describe('getConfigValue', () => {
+  it('returns value from config file when env var is not set', async () => {
+    const { writeConfig, getConfigValue } = await import('../../src/core/config.js')
+    await writeConfig({ registryUrl: 'https://config-url.dev/v1' })
+    const val = await getConfigValue('registryUrl')
+    expect(val).toBe('https://config-url.dev/v1')
+  })
+
+  it('env var overrides config file value', async () => {
+    vi.stubEnv('SKILLFORGE_REGISTRY_URL', 'https://env-url.dev/v1')
+    const { writeConfig, getConfigValue } = await import('../../src/core/config.js')
+    await writeConfig({ registryUrl: 'https://config-url.dev/v1' })
+    const val = await getConfigValue('registryUrl')
+    expect(val).toBe('https://env-url.dev/v1')
+  })
+
+  it('returns undefined when key not set in file or env', async () => {
+    const { getConfigValue } = await import('../../src/core/config.js')
+    const val = await getConfigValue('token')
+    expect(val).toBeUndefined()
+  })
+
+  it('reads anthropicApiKey from ANTHROPIC_API_KEY env', async () => {
+    vi.stubEnv('ANTHROPIC_API_KEY', 'sk-ant-test-key')
+    const { getConfigValue } = await import('../../src/core/config.js')
+    const val = await getConfigValue('anthropicApiKey')
+    expect(val).toBe('sk-ant-test-key')
+  })
+})
