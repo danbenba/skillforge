@@ -287,3 +287,29 @@ If you're using the server for a different project than where it started, pass a
 
 ---
 
+## Example Claude Code Session
+
+```
+User: What skills do I have installed?
+
+Claude: [calls skillforge_list]
+You have 1 skill installed at project scope:
+- forensics-agent (score: 91/100, community)
+
+User: Install the test-writer skill from my ~/skills directory.
+
+Claude: [calls skillforge_install with source=~/skills/test-writer, scope=project]
+Installed "test-writer" at project scope. Score: 84/100.
+
+User: Suggest some more skills for this project.
+
+Claude: [calls skillforge_suggest]
+Based on your project context, I'd suggest:
+1. code-reviewer: your package.json shows a TypeScript project with a review workflow
+2. docs-generator: your README mentions documentation as a goal
+
+Would you like me to install either of these?
+```
+
+---
+
