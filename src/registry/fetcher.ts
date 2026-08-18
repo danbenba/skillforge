@@ -155,3 +155,23 @@ export async function fetchSkillBundle(
     }
   })
 }
+
+export async function fetchSkillFile(source: string, filePath: string): Promise<BundleFile> {
+  const env = readServerEnv()
+  return withClonedSource(source, async (folder) => {
+    const abs = path.resolve(folder, filePath)
+    if (!abs.startsWith(path.resolve(folder) + path.sep)) {
+      throw new Error(`Invalid file path "${filePath}": must stay inside the skill folder`)
+    }
+    const info = await stat(abs)
+    const ext = path.extname(abs).toLowerCase()
+    if (BINARY_EXTENSIONS.has(ext)) {
+      return { path: filePath, size: info.size, content: null, status: 'binary' }
+    }
+    if (info.size > env.bundleTotalLimit) {
+      return { path: filePath, size: info.size, content: null, status: 'truncated' }
+    }
+    const content = await readFile(abs, 'utf8')
+    return { path: filePath, size: info.size, content, status: 'inline' }
+  })
+}
