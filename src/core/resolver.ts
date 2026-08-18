@@ -46,3 +46,26 @@ export async function resolveAllScopes(cwd?: string): Promise<ScopeConfig[]> {
     resolveScope('project', cwd),
   ])
 }
+
+export async function findProjectRoot(cwd: string): Promise<string> {
+  let current = path.resolve(cwd)
+  const root = path.parse(current).root
+
+  while (true) {
+    try {
+      await stat(path.join(current, '.git'))
+      return current
+    } catch {}
+
+    try {
+      await stat(path.join(current, 'package.json'))
+      return current
+    } catch {}
+
+    const parent = path.dirname(current)
+    if (parent === current || current === root) {
+      return path.resolve(cwd)
+    }
+    current = parent
+  }
+}
