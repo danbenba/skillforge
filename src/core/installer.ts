@@ -85,3 +85,16 @@ export async function installFromPath(
     alreadyExisted,
   }
 }
+
+export async function uninstallSkill(skillName: string, scope: ScopeLevel): Promise<void> {
+  const scopeConfig = await resolveScope(scope)
+  const manifest = await readManifest(scopeConfig)
+
+  if (!(skillName in manifest.skills)) {
+    throw new Error(`Skill "${skillName}" is not installed at ${scope} scope`)
+  }
+
+  const skillDir = path.join(scopeConfig.skillsDir, skillName)
+  await rm(skillDir, { recursive: true, force: true })
+  await removeSkillFromManifest(scopeConfig, skillName)
+}
