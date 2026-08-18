@@ -424,3 +424,12 @@ async function checkBrokenReferences(
   }
   return broken
 }
+
+function findLineNumber(lines: string[], charIndex: number, content: string): number {
+  let count = 0
+  for (let i = 0; i < lines.length; i++) {
+    count += lines[i].length + 1
+    if (count > charIndex) return i + 1
+  }
+  return lines.length
+}
