@@ -12,3 +12,12 @@ export interface SkillForgeConfig {
 function getConfigPath(): string {
   return path.join(os.homedir(), '.skillforge', 'config.json')
 }
+
+export async function readConfig(): Promise<SkillForgeConfig> {
+  try {
+    const raw = await readFile(getConfigPath(), 'utf8')
+    return JSON.parse(raw) as SkillForgeConfig
+  } catch {
+    return {}
+  }
+}
