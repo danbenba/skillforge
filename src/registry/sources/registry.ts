@@ -6,3 +6,16 @@ async function getRegistryBase(): Promise<string> {
     return process.env.SKILLFORGE_REGISTRY_URL ?? 'https://skilldex-registry.vercel.app/v1'
   }
 }
+
+export interface RegistrySkill {
+  name: string
+  description: string
+  author: string | null
+  source_url: string
+  trust_tier: 'verified' | 'community'
+  score: number | null
+  spec_version: string
+  tags: string[]
+  install_count: number
+  published_at: string
+}
