@@ -113,3 +113,15 @@ Everything is driven by `.env` (see [.env.example](.env.example)):
 | `SKILLFORGE_BUNDLE_TOTAL_LIMIT` | `262144` | Max bytes per skill bundle |
 | `ANTHROPIC_API_KEY` | empty | Only needed for `skillforge_suggest` |
 
+## How installation works
+
+Claude Code has a filesystem, claude.ai does not. So the two surfaces install differently:
+
+| | Claude Code | claude.ai |
+|---|---|---|
+| Mechanism | `skillforge_install` copies the skill to disk and records it in a manifest | `skillforge_activate` returns the whole `SKILL.md`, Claude applies it in the conversation |
+| Persistence | Permanent | Conversation only, unless you click "Copy to your skills" on the recreated skill, or upload the zip in Settings > Capabilities > Skills |
+| Safety | Format validation plus your review | Claude reviews scripts and instructions before loading, and refuses skills that look unsafe |
+
+The one rule that never changes: skill instructions are loaded and followed verbatim. SkillForge never rewrites, summarizes or "improves" a skill's content.
+
