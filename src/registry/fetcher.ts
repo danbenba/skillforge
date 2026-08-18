@@ -49,3 +49,10 @@ const BINARY_EXTENSIONS = new Set([
 ])
 
 const SKIPPED_DIRS = new Set(['.git', 'node_modules', '.skillforge'])
+
+export async function resolveSource(source: string): Promise<ResolvedSource> {
+  if (source.startsWith('git+')) return { url: source }
+  if (source.includes('://')) return { url: `git+${source}` }
+  const info = await getSkillInstallInfo(source)
+  return { url: `git+${info.source_url}`, registryName: info.name }
+}
