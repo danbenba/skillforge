@@ -14,3 +14,17 @@ const MAX_DESCRIPTION_CHARS = 1024
 const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const RESERVED_NAME_WORDS = ['claude', 'anthropic']
+
+const WEIGHTS = {
+  frontmatterParseable: 16,
+  namePresent: 16,
+  nameFormat: 11,
+  descriptionPresent: 16,
+  descriptionLength: 6,
+  descriptionFormat: 11,
+  lineCount: 7,
+  allowedSubdirs: 4,
+  noReadme: 4,
+  referencedResourcesExist: 7,
+  bundledResourcesCorrect: 2,
+} as const
