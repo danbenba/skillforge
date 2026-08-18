@@ -433,3 +433,34 @@ function findLineNumber(lines: string[], charIndex: number, content: string): nu
   }
   return lines.length
 }
+
+async function checkBundledResourceStructure(skillPath: string): Promise<string[]> {
+  const misplaced: string[] = []
+
+  const checks: Array<{ dir: string; badExtensions: string[]; reason: string }> = [
+    {
+      dir: 'scripts',
+      badExtensions: ['.md', '.txt', '.pdf'],
+      reason: 'docs should go in references/',
+    },
+    {
+      dir: 'references',
+      badExtensions: ['.sh', '.py', '.js', '.ts', '.rb'],
+      reason: 'scripts should go in scripts/',
+    },
+  ]
+
+  for (const check of checks) {
+    const dirPath = path.join(skillPath, check.dir)
+    try {
+      const entries = await readdir(dirPath)
+      for (const entry of entries) {
+        const ext = path.extname(entry).toLowerCase()
+        if (check.badExtensions.includes(ext)) {
+          misplaced.push(`${check.dir}/${entry} (${check.reason})`)
+        }
+      }
+    } catch {}
+  }
+  return misplaced
+}
