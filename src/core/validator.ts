@@ -394,3 +394,33 @@ interface BrokenRef {
   ref: string
   reason: string
 }
+
+async function checkBrokenReferences(
+  content: string,
+  skillPath: string,
+  lines: string[]
+): Promise<BrokenRef[]> {
+  const broken: BrokenRef[] = []
+
+  const refPattern =
+    /!?\[[^\]]*\]\(\s*([^)#\s]+)|(?:^|[\s`])((?:scripts|references|assets)\/[^\s`)]+)/gm
+
+  let match: RegExpExecArray | null
+  while ((match = refPattern.exec(content)) !== null) {
+    const ref = (match[1] ?? match[2])?.trim()
+    if (!ref || ref.startsWith('http://') || ref.startsWith('https://')) continue
+
+    const refPath = path.resolve(skillPath, ref)
+    try {
+      await stat(refPath)
+    } catch {
+      const lineIndex = findLineNumber(lines, match.index, content)
+      broken.push({
+        line: lineIndex,
+        ref,
+        reason: `${ref} not found`,
+      })
+    }
+  }
+  return broken
+}
