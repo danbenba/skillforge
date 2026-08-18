@@ -304,3 +304,9 @@ function fatal(skillPath: string, message: string): ValidationResult {
     errorCount: 1,
   }
 }
+
+interface FrontmatterResult {
+  frontmatter: SkillFrontmatter | null
+  frontmatterEndLine: number
+  parseError: string | null
+}
