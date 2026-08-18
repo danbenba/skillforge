@@ -358,3 +358,12 @@ function extractFrontmatter(content: string, lines: string[]): FrontmatterResult
     }
   }
 }
+
+function findFieldLine(lines: string[], field: string, maxLine: number): number | undefined {
+  for (let i = 0; i < Math.min(maxLine, lines.length); i++) {
+    if (lines[i].trimStart().startsWith(`${field}:`)) {
+      return i + 1
+    }
+  }
+  return undefined
+}
