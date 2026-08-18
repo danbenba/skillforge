@@ -23,3 +23,19 @@ afterEach(async () => {
   vi.unstubAllEnvs()
   vi.resetModules()
 })
+
+describe('readConfig', () => {
+  it('returns empty object when config file does not exist', async () => {
+    const { readConfig } = await import('../../src/core/config.js')
+    const config = await readConfig()
+    expect(config).toEqual({})
+  })
+
+  it('reads and parses an existing config file', async () => {
+    const { writeConfig, readConfig } = await import('../../src/core/config.js')
+    await writeConfig({ registryUrl: 'https://example.com/v1', defaultScope: 'global' })
+    const config = await readConfig()
+    expect(config.registryUrl).toBe('https://example.com/v1')
+    expect(config.defaultScope).toBe('global')
+  })
+})
