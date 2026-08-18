@@ -4,3 +4,4 @@ import os from 'node:os'
 import type { ScopeLevel, ScopeConfig } from '../types/scope.js'
 
 const SKILLFORGE_DIR = '.skillforge'
+const MANIFEST_FILE = 'skillforge.json'
