@@ -13,3 +13,21 @@ function label(severity: ValidationDiagnostic['severity']): string {
       return chalk.green('pass'.padEnd(LABEL_WIDTH))
   }
 }
+
+export function renderValidationReport(result: ValidationResult): string {
+  const lines: string[] = []
+
+  for (const diag of result.diagnostics) {
+    const loc = diag.line !== undefined ? `line ${diag.line}: ` : ''
+    lines.push(`  ${label(diag.severity)} ${loc}${diag.message}`)
+  }
+
+  lines.push('')
+
+  const scoreColor =
+    result.score >= 80 ? chalk.green : result.score >= 50 ? chalk.yellow : chalk.red
+  lines.push(`Format conformance score: ${scoreColor(String(result.score))}/100`)
+  lines.push(`Validated against: skill-format v${result.specVersion}`)
+
+  return lines.join('\n')
+}
