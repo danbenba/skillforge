@@ -8,3 +8,7 @@ const mocks = vi.hoisted(() => ({
   cloneFn: vi.fn(),
   installFromPath: vi.fn(),
 }))
+
+vi.mock('simple-git', () => ({
+  simpleGit: () => ({ clone: mocks.cloneFn }),
+}))
