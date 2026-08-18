@@ -292,3 +292,15 @@ export async function validateSkill(skillPath: string): Promise<ValidationResult
     errorCount: diagnostics.filter((d) => d.severity === 'error').length,
   }
 }
+
+function fatal(skillPath: string, message: string): ValidationResult {
+  return {
+    skill: path.basename(skillPath),
+    score: 0,
+    diagnostics: [{ severity: 'error', message, check: 'skill-exists' }],
+    specVersion: SPEC_VERSION,
+    passCount: 0,
+    warnCount: 0,
+    errorCount: 1,
+  }
+}
