@@ -136,3 +136,12 @@ export interface RegistrySkillset {
   published_at: string
   skills: Array<{ name: string; source_url: string }>
 }
+
+export interface SkillsetInstallInfo {
+  name: string
+  source_url: string
+  score: number | null
+  spec_version: string
+  trust_tier: 'verified' | 'community'
+  skills: Array<{ name: string; source_url: string }>
+}
