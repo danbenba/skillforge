@@ -7,3 +7,11 @@ export {
   updateSkill,
   deleteSkill,
 } from './sources/registry.js'
+export type {
+  RegistrySkill,
+  SearchOptions,
+  SearchResponse,
+  InstallInfo,
+  PublishBody,
+  PublishResponse,
+} from './sources/registry.js'
