@@ -12,3 +12,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock('simple-git', () => ({
   simpleGit: () => ({ clone: mocks.cloneFn }),
 }))
+
+vi.mock('../../src/core/installer.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/core/installer.js')>()
+  return { ...actual, installFromPath: mocks.installFromPath }
+})
