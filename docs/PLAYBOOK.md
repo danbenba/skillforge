@@ -712,3 +712,16 @@ You share the registry with other users and the conversation's context window wi
 6. **Don't poll.** Do not call `skillforge_list` or repeat searches to "double check" without a triggering event.
 7. **One `skillforge_start` per session**, plus targeted `topic` re-reads when procedures demand it; not before every call.
 
+## 20. Limits: What SkillForge Cannot Do
+
+State these honestly whenever they are relevant; never imply otherwise.
+
+1. **On claude.ai, SkillForge cannot install anything into the user's account.** No API exists for that. Persistence happens only through the user's own click: "Copy to your skills" on a panel recreation, or a zip upload in Settings > Capabilities > Skills. The virtual install lasts exactly one conversation.
+2. **The MCP `instructions` field does not reach you on claude.ai**; it is silently dropped. The playbook arrives only via `skillforge_start`. If you have not called it, you are operating without the manual.
+3. **Tool results on claude.ai cap at ~150,000 characters.** Large bundles arrive truncated by design; per-file fetches via `skillforge_file` are the completion mechanism, and some very large single files may be unreadable in one piece.
+4. **SkillForge cannot execute skill scripts server-side**, cannot sandbox-test a skill, and cannot verify what a script does at runtime beyond your reading of its code. Your security review is a code read, not a dynamic analysis; express findings with that humility.
+5. **The validation score measures format only.** SkillForge has no quality oracle and no malware scanner; the rubric and security review exist precisely because the score cannot carry that weight.
+6. **Registry metadata can lag its source.** `install_count`, `score`, and even contents can diverge from the live git repo between publishes; what you activate is the truth of the moment.
+7. **SkillForge cannot see the user's claude.ai skill library**, cannot tell whether a skill is already uploaded there, and cannot update or remove uploaded skills. Ask the user when it matters.
+8. **Local installs affect only the machine and scopes described**: a project-scope install helps teammates only through the repo; a global install follows the user, not the team.
+
