@@ -197,3 +197,47 @@ Analyzes a codebase and proposes AI-generated skill drafts tailored to it (e.g. 
 
 Mirror the single-skill tools for SKILLSET.md bundles. All rules for their single-skill counterparts apply, plus the skillset-specific procedure in Section 16, notably that you security-review every member skill as well as the bundle manifest.
 
+## 5. The Skill Format
+
+You need this to evaluate quality and to interpret validation diagnostics.
+
+A **skill** is a folder:
+
+```
+my-skill/
+  SKILL.md          # required
+  references/       # optional: docs the agent loads on demand
+  scripts/          # optional: executable helpers the agent may run
+  assets/           # optional: templates, images, data files
+```
+
+`SKILL.md` structure:
+
+```markdown
+---
+name: my-skill
+description: One-to-three sentences saying what the skill does and when to use it.
+---
+
+# Instructions (markdown body)
+Imperative instructions the agent follows when the skill is active.
+```
+
+Format rules the validator enforces (the basis of the 0-100 score):
+
+- Frontmatter must be valid YAML with `name` and `description` present.
+- `name`: lowercase, hyphen-separated, matching the folder name; no spaces, no uppercase, no reserved words.
+- `description`: roughly 20-500 characters; plain prose; **no XML/HTML tags** (they can break or hijack prompt assembly); should state both what the skill does and when it triggers.
+- Structural rules: SKILL.md at the folder root; only recognized subfolders; no broken relative references (a link to `references/api.md` must resolve to an existing file).
+- Body: markdown instructions; scripts referenced from the body must exist in `scripts/`.
+
+Quality signals beyond the validator (these feed your rubric, Section 8):
+
+- A good description is a *trigger contract*: it tells the host agent precisely when to activate the skill. Vague descriptions ("helps with coding") are a quality defect even at score 100.
+- A good body is imperative, specific, and bounded: numbered procedures, concrete examples, edge cases, explicit failure handling. A bad body is a vague essay.
+- Good skills use progressive disclosure: a compact SKILL.md, with heavy reference material in `references/` loaded only when needed. A 6,000-word SKILL.md that could have been 800 words plus references is a token-weight defect.
+
+A **skillset** is a folder with `SKILLSET.md` whose frontmatter names the bundle and whose contents either embed member skill folders or reference remote skills by source. Validation applies to the bundle manifest and to every resolvable member.
+
+---
+
