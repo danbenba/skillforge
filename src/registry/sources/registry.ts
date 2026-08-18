@@ -91,3 +91,7 @@ export async function searchRegistry(options: SearchOptions = {}): Promise<Searc
   const qs = params.toString()
   return registryFetch<SearchResponse>(`/skills${qs ? `?${qs}` : ''}`)
 }
+
+export async function getSkillInstallInfo(name: string): Promise<InstallInfo> {
+  return registryFetch<InstallInfo>(`/skills/${encodeURIComponent(name)}/install`)
+}
