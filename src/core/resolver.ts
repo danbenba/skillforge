@@ -38,3 +38,11 @@ export async function resolveScope(level: ScopeLevel, cwd?: string): Promise<Sco
     }
   }
 }
+
+export async function resolveAllScopes(cwd?: string): Promise<ScopeConfig[]> {
+  return Promise.all([
+    resolveScope('global', cwd),
+    resolveScope('shared', cwd),
+    resolveScope('project', cwd),
+  ])
+}
