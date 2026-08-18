@@ -46,3 +46,24 @@ Claude first calls `skillforge_start`, which returns the operating playbook (sel
 
 Note: claude.ai drops the MCP `instructions` field for custom connectors, which is why the playbook ships as a tool instead.
 
+## Quick start (Claude Code)
+
+```bash
+npm install -g skillforge
+claude mcp add skillforge -- skillforge mcp
+```
+
+That registers the stdio server. On top of the claude.ai tool set, it adds real install tools: `skillforge_install`, `skillforge_uninstall`, `skillforge_list`, `skillforge_suggest`, and the skillset equivalents.
+
+The CLI works on its own too:
+
+```bash
+skillforge search changelog
+skillforge install conventional-changelog --scope project
+skillforge list
+skillforge validate ./my-skill
+skillforge suggest
+```
+
+Scopes: `global` (`~/.skillforge/global`), `shared` (`~/.skillforge/shared`), `project` (`<repo>/.skillforge`). Details in [docs/scoping.md](docs/scoping.md).
+
