@@ -152,3 +152,14 @@ assets/       logo and favicons
 schema/       architecture notes
 ```
 
+## Development
+
+```bash
+npm install
+npm run dev        # http server with tsx, no build step
+npm test           # vitest
+npm run build      # tsc to dist/
+```
+
+Contributions welcome, see [docs/contributing.md](docs/contributing.md).
+
