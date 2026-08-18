@@ -16,3 +16,5 @@ export interface SkillPackage {
   hasReferences: boolean
   hasAssets: boolean
 }
+
+export type ValidationSeverity = 'error' | 'warning' | 'pass'
