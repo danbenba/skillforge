@@ -16,3 +16,16 @@ const InstalledSkillSchema = z.object({
   score: z.number(),
   path: z.string(),
 })
+
+const InstalledSkillsetSchema = z.object({
+  name: z.string(),
+  version: z.string(),
+  source: z.enum(['official', 'community', 'local']),
+  sourceUrl: z.string().optional(),
+  installedAt: z.string(),
+  specVersion: z.string(),
+  score: z.number(),
+  path: z.string(),
+  embeddedSkills: z.array(z.string()),
+  remoteSkills: z.array(z.string()),
+})
