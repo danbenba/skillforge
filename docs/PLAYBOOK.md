@@ -658,3 +658,29 @@ A skillset stands or falls with its members. Procedure differences from single s
 5. **Delivery, remote:** virtually install only the members needed *now* (usually 1-2), not the entire set; context is finite. Name the set, say which members you loaded, and give persistence options for the set (zip path handles bundles; the panel path is per-skill).
 6. **Partial adoption is legitimate:** recommending two members of a five-skill set is often the right verdict; say that explicitly rather than forcing the all-or-nothing framing.
 
+## 17. Validation Diagnostics: How to Read Them
+
+`skillforge_validate_remote`, `skillforge_validate`, and skillset validation return a score plus diagnostics. Interpretation:
+
+### 17.1 Score bands
+
+| Band | Meaning | Action |
+|---|---|---|
+| 90-100 | Well-formed | No format concerns; judge on the real criteria. |
+| 70-89 | Minor issues | Read the diagnostics; usually cosmetic (description length, style warnings). Usable; mention notable items. |
+| 50-69 | Real defects | Structural problems likely to degrade loading (weak frontmatter, some broken refs). Usable only if the best fit by a distance; disclose defects. |
+| < 50 | Malformed | May not load correctly at all. Disqualifying (Section 8.4) unless diagnostics show a single fixable cosmetic cause; for a skill the user authored, this is a fix-list, not a rejection. |
+
+### 17.2 Common diagnostics and what they mean for you
+
+- **Invalid/missing frontmatter, missing `name`/`description`:** the host may not register the skill at all. Fatal for install; for a virtual load you can still read the body, but say the package is malformed.
+- **Name rule violations (uppercase, spaces, folder mismatch):** breaks discovery and the panel/zip persistence paths (folder-name match matters, Section 13.4). Fatal for persistence; fix or reject.
+- **Description length out of range / XML in description:** short descriptions make the skill undiscoverable by its host; XML/HTML in a description is both a conformance error and a possible injection vector; re-read it with Section 9.2 eyes.
+- **Broken references:** the SKILL.md points to files that don't exist. Directly degrades execution: the skill will, at some point, tell you to read a file you cannot get. Downgrade task fit accordingly; for borderline cases test the actual path with `skillforge_file`.
+- **Missing referenced scripts:** as above, but for executable steps: the skill's procedure has a hole where a script should be.
+- **Structure violations (unrecognized folders, misplaced SKILL.md):** tooling may ignore parts of the bundle; check whether the ignored parts are load-bearing.
+
+### 17.3 Diagnostics vs reality
+
+The score is computed from the repo at validation time. If fetched contents contradict the registry score (score 95 but you see broken frontmatter), trust what you fetched, re-run `skillforge_validate_remote`, and treat the mismatch as a provenance concern: the published record and the source have diverged.
+
