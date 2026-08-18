@@ -32,3 +32,22 @@ function cors(_req: Request, res: Response, next: NextFunction): void {
   res.setHeader('Access-Control-Expose-Headers', 'Mcp-Session-Id')
   next()
 }
+
+function requireAuth(env: ServerEnv) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!env.authToken) {
+      next()
+      return
+    }
+    const header = req.headers.authorization ?? ''
+    if (header === `Bearer ${env.authToken}`) {
+      next()
+      return
+    }
+    res.status(401).json({
+      jsonrpc: '2.0',
+      error: { code: -32001, message: 'Unauthorized: missing or invalid bearer token' },
+      id: null,
+    })
+  }
+}
