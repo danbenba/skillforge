@@ -137,3 +137,18 @@ Local only (stdio):
 
 Full reference in [docs/mcp.md](docs/mcp.md) and [docs/cli.md](docs/cli.md).
 
+## Project layout
+
+```
+src/
+  cli/        commands and terminal UI
+  core/       validator, installer, resolver, manifest, config
+  mcp/        MCP server: http transport, stdio transport, tool groups
+  registry/   registry client, git fetcher
+  types/      shared types
+docs/         user docs and the Claude playbook
+tests/        vitest unit tests and fixtures
+assets/       logo and favicons
+schema/       architecture notes
+```
+
