@@ -84,3 +84,16 @@ describe('addSkillToManifest', () => {
     expect(m.skills['skill-a'].score).toBe(50)
   })
 })
+
+describe('removeSkillFromManifest', () => {
+  it('removes an installed skill', async () => {
+    await addSkillToManifest(scopeConfig, makeSkill('skill-to-remove'))
+    await removeSkillFromManifest(scopeConfig, 'skill-to-remove')
+    const m = await readManifest(scopeConfig)
+    expect('skill-to-remove' in m.skills).toBe(false)
+  })
+
+  it('throws if skill not in manifest', async () => {
+    await expect(removeSkillFromManifest(scopeConfig, 'nonexistent')).rejects.toThrow()
+  })
+})
