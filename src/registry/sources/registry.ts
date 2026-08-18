@@ -209,3 +209,10 @@ export async function updateSkillset(
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function deleteSkillset(token: string, name: string): Promise<void> {
+  await registryFetch<void>(`/skillsets/${encodeURIComponent(name)}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
