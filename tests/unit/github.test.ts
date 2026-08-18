@@ -45,3 +45,95 @@ describe('parseGitUrl', () => {
     expect(result.repoUrl).toBe('https://github.com/user/repo')
   })
 })
+
+describe('installFromGitUrl: onMultipleSkills callback', () => {
+  let fakeRepo: string
+  let tmpScope: string
+
+  beforeEach(async () => {
+    fakeRepo = await mkdtemp(path.join(os.tmpdir(), 'skillforge-github-test-'))
+    tmpScope = await mkdtemp(path.join(os.tmpdir(), 'skillforge-scope-'))
+
+    await mkdir(path.join(fakeRepo, 'skill-a'))
+    await writeFile(
+      path.join(fakeRepo, 'skill-a', 'SKILL.md'),
+      '---\nname: skill-a\ndescription: ' + 'a'.repeat(40) + '\n---\n'
+    )
+    await mkdir(path.join(fakeRepo, 'skill-b'))
+    await writeFile(
+      path.join(fakeRepo, 'skill-b', 'SKILL.md'),
+      '---\nname: skill-b\ndescription: ' + 'b'.repeat(40) + '\n---\n'
+    )
+
+    mocks.cloneFn.mockImplementation(async (_url: string, dest: string) => {
+      await cp(fakeRepo, dest, { recursive: true })
+    })
+
+    mocks.installFromPath.mockResolvedValue({
+      skillName: 'skill-a',
+      scope: 'project',
+      installedPath: path.join(tmpScope, 'skills', 'skill-a'),
+      validation: {
+        score: 80,
+        skill: 'skill-a',
+        specVersion: '1.0',
+        diagnostics: [],
+        errorCount: 0,
+        warnCount: 0,
+      },
+      alreadyExisted: false,
+    })
+  })
+
+  afterEach(async () => {
+    await rm(fakeRepo, { recursive: true, force: true })
+    await rm(tmpScope, { recursive: true, force: true })
+    mocks.cloneFn.mockReset()
+    mocks.installFromPath.mockReset()
+  })
+
+  it('calls onMultipleSkills with all found skill folder names', async () => {
+    const { installFromGitUrl } = await import('../../src/registry/sources/github.js')
+
+    const scopeConfig = {
+      level: 'project' as const,
+      rootPath: tmpScope,
+      manifestPath: path.join(tmpScope, 'skillforge.json'),
+      skillsDir: path.join(tmpScope, 'skills'),
+      skillsetsDir: path.join(tmpScope, 'skillsets'),
+    }
+
+    const onMultipleSkills = vi.fn(async (names: string[]) => names[0])
+
+    await installFromGitUrl('git+https://github.com/user/repo', scopeConfig, {
+      scope: 'project',
+      onMultipleSkills,
+    })
+
+    expect(onMultipleSkills).toHaveBeenCalledOnce()
+    const [names] = onMultipleSkills.mock.calls[0]
+    expect(names).toContain('skill-a')
+    expect(names).toContain('skill-b')
+  })
+
+  it('auto-selects first skill when no onMultipleSkills callback provided', async () => {
+    const { installFromGitUrl } = await import('../../src/registry/sources/github.js')
+
+    const scopeConfig = {
+      level: 'project' as const,
+      rootPath: tmpScope,
+      manifestPath: path.join(tmpScope, 'skillforge.json'),
+      skillsDir: path.join(tmpScope, 'skills'),
+      skillsetsDir: path.join(tmpScope, 'skillsets'),
+    }
+
+    await installFromGitUrl('git+https://github.com/user/repo', scopeConfig, {
+      scope: 'project',
+    })
+
+    expect(mocks.installFromPath).toHaveBeenCalledOnce()
+    const calledPath: string = mocks.installFromPath.mock.calls[0][0]
+
+    expect(calledPath).toMatch(/skill-[ab]/)
+  })
+})
