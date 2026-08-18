@@ -264,3 +264,21 @@ async function discoverEmbeddedSkills(skillsetPath: string): Promise<string[]> {
   } catch {}
   return embedded
 }
+
+async function checkUnknownDirs(
+  skillsetPath: string,
+  embeddedSkillNames: string[]
+): Promise<string[]> {
+  const embeddedSet = new Set(embeddedSkillNames)
+  const unknown: string[] = []
+  try {
+    const entries = await readdir(skillsetPath, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      if (entry.name === 'assets') continue
+      if (embeddedSet.has(entry.name)) continue
+      unknown.push(entry.name)
+    }
+  } catch {}
+  return unknown
+}
