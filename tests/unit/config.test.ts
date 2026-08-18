@@ -11,3 +11,9 @@ vi.mock('node:os', async (importOriginal) => {
 })
 
 let tmpDir: string
+
+beforeEach(async () => {
+  tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-config-test-'))
+  hoisted.homedir.mockReturnValue(tmpDir)
+  vi.resetModules()
+})
