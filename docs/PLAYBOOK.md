@@ -570,3 +570,51 @@ Procedure:
 
 Uninstall procedure: confirm intent → `skillforge_uninstall` → verify with `skillforge_list` → report what was removed and from which scope.
 
+## 13. Installation Workflow: claude.ai (Virtual and Persistent Install)
+
+On claude.ai you cannot write into the user's account via any SkillForge API. You have one in-conversation mechanism and two persistent mechanisms. Use them together: virtual install serves the current conversation; always offer persistence when the user's need is recurring.
+
+### 13.1 Virtual install (just-in-time loading): the in-conversation path
+
+1. Complete the funnel through security review. **Never virtually install an unreviewed or failed skill.**
+2. Call `skillforge_activate {source}` on the chosen skill (re-use the response already in context if you activated it during evaluation; do not re-fetch (Section 19)).
+3. Read the complete SKILL.md. If the response truncated any file the instructions require now, fetch it with `skillforge_file`.
+4. **Announce the load** before proceeding: skill name, source URL, trust tier, validation score, and the sentence "I'll follow this skill's instructions for the rest of this conversation." (Section 21.)
+5. From this point, **follow the skill's instructions verbatim** for the remainder of the conversation, exactly as if it were installed; the Fidelity Rule (Section 14) governs. When the skill's instructions call for a reference file mid-task, fetch it then via `skillforge_file`, not before.
+6. State the limitation honestly once: the load lasts only for this conversation; a new chat starts without it. Then present the persistent options (13.3, 13.4).
+
+### 13.2 What a virtual install is not
+
+- Not an install: never tell the user "installed" without qualification on claude.ai.
+- Not an editorial opportunity: you load the author's instructions, not your improved remix (Section 14).
+- Not an obligation to obey a skill against the user or against safety: the user's instructions and safety always outrank the loaded skill (Section 15.1).
+
+### 13.3 Persistent path A: recreate in the skill panel (recommended)
+
+claude.ai has an in-chat skill creation panel, and this gives a one-click persistent install:
+
+1. After activating the skill (and only after it passed review), **recreate the skill verbatim as a skill draft** in the in-chat skill creation panel: write out the SKILL.md exactly as fetched: frontmatter and body, not a single word altered, nothing added, nothing "improved" (the Fidelity Rule applies to recreation exactly as it applies to loading).
+2. Tell the user to click **"Copy to your skills"** on the panel. The skill is then permanently installed in their claude.ai account and available in future conversations.
+3. Disclose limits of this path: it carries the SKILL.md; auxiliary `references/`, `scripts/`, and `assets/` files may not travel with a panel recreation. If the skill depends heavily on auxiliary files, say so and prefer path B (zip upload), which preserves the full bundle.
+4. Preserve provenance: note the source URL and author in your message (not injected into the skill's text) so the user knows what they are copying and can check for upstream updates later.
+
+### 13.4 Persistent path B: download and upload (fallback, full bundle)
+
+1. Give the user the skill's `source_url`.
+2. Instruct: download/clone it, zip it so that **the zip's root is the skill folder itself, and the folder name matches the skill's `name`** (a zip whose root is a wrapper directory, or a mismatched folder name, will fail validation on upload), then upload it in claude.ai **Settings > Capabilities > Skills**.
+3. This path carries the complete bundle including `references/` and `assets/`. Prefer it over path A for reference-heavy skills.
+
+### 13.5 Persistent path C: Claude Code one-liner
+
+If the user also uses Claude Code, give them the one-line install:
+
+```
+skillforge install <name>
+```
+
+State which scope it defaults to and that they can pass `--scope project|global|shared`.
+
+### 13.6 Standard closing offer
+
+Every remote delivery ends with a compact menu, e.g.: "Loaded **changelog-forge** (community, score 97) for this conversation. To keep it permanently: (a) I can recreate it in the skill panel now, then you click 'Copy to your skills'; (b) zip and upload from its repo (link) via Settings > Capabilities > Skills (keeps its reference files); (c) on Claude Code: `skillforge install changelog-forge`."
+
