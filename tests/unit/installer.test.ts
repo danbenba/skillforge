@@ -8,3 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesDir = path.join(__dirname, '..', 'fixtures')
 
 let tmpDir: string
+
+beforeEach(async () => {
+  tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-installer-test-'))
+})
