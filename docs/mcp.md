@@ -331,3 +331,23 @@ Would you like me to install either of these?
 
 ---
 
+## Remote mode (claude.ai custom connector)
+
+The same server also runs over Streamable HTTP for claude.ai:
+
+```bash
+cp .env.example .env   # set SKILLFORGE_ENV, SKILLFORGE_PORT, SKILLFORGE_PUBLIC_URL
+skillforge serve       # or: docker compose up -d --build
+```
+
+Then on claude.ai: **Settings > Connectors > Add custom connector** with the URL
+`https://<your-domain>/mcp` (no authentication, unless `SKILLFORGE_AUTH_TOKEN` is set).
+
+Remote mode exposes the catalog tools only (`skillforge_start`, `skillforge_search`,
+`skillforge_skillset_search`, `skillforge_inspect`, `skillforge_activate`,
+`skillforge_file`, `skillforge_compare`, `skillforge_validate_remote`); the
+filesystem install tools are stdio-only, because claude.ai has no access to your disk.
+On claude.ai, installation is *virtual*: `skillforge_activate` returns the complete
+SKILL.md and Claude follows it verbatim for the rest of the conversation. For a
+permanent install, Claude recreates the skill in the claude.ai skill panel and you
+click **"Copy to your skills"**.
