@@ -184,3 +184,7 @@ export async function searchSkillsets(
 export async function getSkillset(name: string): Promise<RegistrySkillset> {
   return registryFetch<RegistrySkillset>(`/skillsets/${encodeURIComponent(name)}`)
 }
+
+export async function getSkillsetInstallInfo(name: string): Promise<SkillsetInstallInfo> {
+  return registryFetch<SkillsetInstallInfo>(`/skillsets/${encodeURIComponent(name)}/install`)
+}
