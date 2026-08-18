@@ -51,3 +51,11 @@ function requireAuth(env: ServerEnv) {
     })
   }
 }
+
+function methodNotAllowed(_req: Request, res: Response): void {
+  res.status(405).json({
+    jsonrpc: '2.0',
+    error: { code: -32000, message: 'Method not allowed. Use POST for MCP requests.' },
+    id: null,
+  })
+}
