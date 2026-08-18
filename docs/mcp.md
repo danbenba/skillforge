@@ -86,3 +86,196 @@ The MCP server uses **`StdioServerTransport`**: it communicates over stdin/stdou
 
 ---
 
+## Available Tools
+
+### `skillforge_validate`
+
+Validate a skill folder and return its format conformance score.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `path` | `string` | Yes | Absolute or relative path to the skill folder |
+
+**Output:**
+
+```json
+{
+  "skill": "forensics-agent",
+  "score": 91,
+  "diagnostics": [
+    { "severity": "pass", "message": "YAML frontmatter valid", "check": "yaml-frontmatter" },
+    { "severity": "pass", "message": "name field present", "check": "name-present" }
+  ],
+  "specVersion": "1.0",
+  "passCount": 7,
+  "warnCount": 0,
+  "errorCount": 0
+}
+```
+
+**Example prompt to Claude Code:**
+> "Validate the skill at ./forensics-agent and tell me if it's ready to install."
+
+---
+
+### `skillforge_install`
+
+Install a skill from a local directory or a `git+https://` URL.
+
+**Input:**
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `source` | `string` | Yes | *(none)* | Local path or `git+https://` URL |
+| `scope` | `"global" \| "shared" \| "project"` | No | `"project"` | Installation scope |
+| `force` | `boolean` | No | `false` | Overwrite if already installed |
+
+**Output:**
+
+```json
+{
+  "installed": true,
+  "skillName": "forensics-agent",
+  "scope": "project",
+  "score": 91,
+  "diagnostics": []
+}
+```
+
+**Example prompt to Claude Code:**
+> "Install the forensics-agent skill from git+https://github.com/acme/forensics-agent at project scope."
+
+---
+
+### `skillforge_uninstall`
+
+Remove an installed skill from a scope.
+
+**Input:**
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `skillName` | `string` | Yes | *(none)* | Name of the skill to remove |
+| `scope` | `"global" \| "shared" \| "project"` | No | `"project"` | Scope to remove from |
+
+**Output:**
+
+```json
+{
+  "removed": true,
+  "skillName": "forensics-agent",
+  "scope": "project"
+}
+```
+
+---
+
+### `skillforge_list`
+
+List installed skills across scopes.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `scope` | `"global" \| "shared" \| "project"` | No | Filter to a specific scope. Omit to show all. |
+
+**Output:**
+
+```json
+[
+  {
+    "level": "global",
+    "skills": []
+  },
+  {
+    "level": "shared",
+    "skills": []
+  },
+  {
+    "level": "project",
+    "skills": [
+      {
+        "name": "forensics-agent",
+        "version": "1.0.0",
+        "source": "community",
+        "sourceUrl": "git+https://github.com/acme/forensics-agent",
+        "installedAt": "2026-03-26T00:00:00.000Z",
+        "specVersion": "1.0",
+        "score": 91,
+        "path": "skills/forensics-agent"
+      }
+    ]
+  }
+]
+```
+
+**Example prompt to Claude Code:**
+> "What skills do I have installed for this project?"
+
+---
+
+### `skillforge_suggest`
+
+Generate AI-powered skill suggestions based on project context.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `projectPath` | `string` | No | Path to project. Defaults to the server's working directory. |
+
+**Output:**
+
+```json
+{
+  "proposals": [
+    {
+      "skillName": "forensics-agent",
+      "reason": "Your README mentions log analysis and debugging production incidents",
+      "suggestedScope": "project",
+      "available": true
+    },
+    {
+      "skillName": "test-writer",
+      "reason": "package.json has extensive test scripts",
+      "suggestedScope": "project",
+      "available": true
+    }
+  ]
+}
+```
+
+**Requirements:** `ANTHROPIC_API_KEY` must be set in the server's environment (see setup above). Alternatively, point it at a custom Anthropic-compatible endpoint with `ANTHROPIC_BASE_URL` + `ANTHROPIC_AUTH_TOKEN`; see [suggest.md](suggest.md#custom-endpoints).
+
+**Example prompt to Claude Code:**
+> "Suggest skills I should install for this project based on the codebase."
+
+---
+
+### `skillforge_search`
+
+Search the SkillForge registry for skills.
+
+> **Status:** Stub; returns an empty result set. Full registry search is not yet implemented.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `query` | `string` | Yes | Search query |
+
+**Output:**
+
+```json
+{
+  "results": [],
+  "total": 0,
+  "message": "Registry search is not yet available in this version."
+}
+```
+
+---
+
