@@ -47,3 +47,5 @@ const BINARY_EXTENSIONS = new Set([
   '.wav',
   '.bin',
 ])
+
+const SKIPPED_DIRS = new Set(['.git', 'node_modules', '.skillforge'])
