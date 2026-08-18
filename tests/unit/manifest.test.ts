@@ -55,3 +55,16 @@ describe('readManifest', () => {
     expect(m.scope).toBe('project')
   })
 })
+
+describe('writeManifest + readManifest', () => {
+  it('round-trips correctly', async () => {
+    const skill = makeSkill('test-skill')
+    const manifest = createEmptyManifest('project')
+    manifest.skills['test-skill'] = skill
+    await writeManifest(scopeConfig, manifest)
+
+    const read = await readManifest(scopeConfig)
+    expect(read.skills['test-skill'].name).toBe('test-skill')
+    expect(read.skills['test-skill'].score).toBe(90)
+  })
+})
