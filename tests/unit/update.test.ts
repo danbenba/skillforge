@@ -20,3 +20,10 @@ vi.mock('../../src/core/resolver.js', async (importOriginal) => {
 })
 
 let tmpDir: string
+
+beforeEach(async () => {
+  tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-update-test-'))
+  vi.resetModules()
+  mocks.installFromGitUrl.mockReset()
+  mocks.resolveScope.mockReset()
+})
