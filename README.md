@@ -163,3 +163,6 @@ npm run build      # tsc to dist/
 
 Contributions welcome, see [docs/contributing.md](docs/contributing.md).
 
+## License
+
+MIT. SkillForge started as a fork of Skilldex by Pandemonium Research (MIT) and keeps its copyright notice in [LICENSE](LICENSE).
