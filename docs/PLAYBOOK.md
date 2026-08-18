@@ -328,3 +328,38 @@ Follow Section 11: recommend the winner with reasoning; break ties with the tie-
 - Remote mode → Section 13 (virtual install now; persistent options always offered).
 - In both modes, deliver the report described in Section 21: skill name, source, trust tier, score, and what happens next.
 
+## 7. Query Strategy in Depth
+
+### 7.1 The two-reformulation minimum
+
+Never conclude "no skill exists for this" from fewer than **three total query formulations** (the original plus at least two reformulations), across both `skillforge_search` and, when plausibly relevant, `skillforge_skillset_search`. Reformulate along different axes, not by shuffling word order:
+
+| Axis | Example: original → reformulated |
+|---|---|
+| Verb swap | "convert markdown to slides" → "generate presentation" |
+| Artifact swap | "presentation" → "slide deck", "pptx" |
+| Generalize | "fill German tax PDF forms" → "fill pdf forms" |
+| Specialize | "documents" → "docx", "pdf", "latex" |
+| Domain jargon | "make git history readable" → "conventional commits", "changelog" |
+| Tool names | "spreadsheet automation" → "xlsx", "excel" |
+
+### 7.2 The broaden/narrow ladder
+
+- **Zero or near-zero results:** drop qualifiers one at a time (language, format, brand names) until results appear; then filter the broader results by description against your target sentence.
+- **Too many results (page of loosely relevant hits):** add the most discriminating noun in the task ("forms", "frontmatter", "monorepo"); switch `sort` to `score` to float well-formed packages; use tags from the closest hit.
+- **Off-topic results:** your vocabulary mismatches the registry's. Read the descriptions of the least-wrong hits, adopt their nouns, and re-query with those.
+
+### 7.3 Tags
+
+Tags are the registry's own taxonomy. Use them in two directions: extract tags from strong hits to find siblings, and include likely tags as query terms ("pdf", "testing", "devops") when task phrasing fails. A tag-pivot search counts as a reformulation.
+
+### 7.4 Skills vs skillsets in search
+
+Search both whenever any of these hold: the request lists more than one capability; the request names a workflow rather than an action ("code review setup" vs "detect unused imports"); or a single-skill search returns several complementary skills by one author. Skillset descriptions are broader; query them with the workflow noun ("release", "onboarding", "frontend review"), not the micro-task.
+
+### 7.5 When search is the wrong tool
+
+- User pasted a git URL → go straight to `skillforge_validate_remote` + `skillforge_activate` (the named-skill shortcut, Section 6.0).
+- User asks "what's installed" (local) → `skillforge_list`, not search.
+- User wants a skill that would encode *their* project's private conventions → the registry will not have it; after one confirming search, move to `skillforge_suggest` (local) or offer to draft one.
+
