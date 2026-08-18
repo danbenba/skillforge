@@ -14,3 +14,13 @@ import type { InstalledSkill } from '../../src/types/manifest.js'
 
 let tmpDir: string
 let scopeConfig: ScopeConfig
+
+beforeEach(async () => {
+  tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-test-'))
+  scopeConfig = {
+    level: 'project',
+    rootPath: tmpDir,
+    manifestPath: path.join(tmpDir, 'skillforge.json'),
+    skillsDir: path.join(tmpDir, 'skills'),
+  }
+})
