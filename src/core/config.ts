@@ -21,3 +21,9 @@ export async function readConfig(): Promise<SkillForgeConfig> {
     return {}
   }
 }
+
+export async function writeConfig(config: SkillForgeConfig): Promise<void> {
+  const configPath = getConfigPath()
+  await mkdir(path.dirname(configPath), { recursive: true })
+  await writeFile(configPath, JSON.stringify(config, null, 2) + '\n', 'utf8')
+}
