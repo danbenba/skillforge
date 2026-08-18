@@ -23,3 +23,44 @@ Add a description of this skillset and the agent it is designed for.
 
 List what each embedded skill does and how they work together.
 `
+
+export async function runSkillsetInit(name?: string): Promise<void> {
+  const skillsetName = name ?? path.basename(process.cwd())
+
+  const targetDir = name ? path.join(process.cwd(), skillsetName) : process.cwd()
+
+  try {
+    if (name) {
+      try {
+        await stat(targetDir)
+        printError(`Directory "${skillsetName}" already exists`)
+        process.exit(1)
+      } catch {
+        await mkdir(targetDir, { recursive: true })
+      }
+    }
+
+    const skillsetMdPath = path.join(targetDir, 'SKILLSET.md')
+    try {
+      await stat(skillsetMdPath)
+      printError('SKILLSET.md already exists in this directory')
+      process.exit(1)
+    } catch {}
+
+    await writeFile(skillsetMdPath, TEMPLATE(skillsetName), 'utf8')
+    await mkdir(path.join(targetDir, 'assets'), { recursive: true })
+
+    printSuccess(`Skillset "${skillsetName}" initialized`)
+    printInfo(`  ${path.relative(process.cwd(), skillsetMdPath)}`)
+    printInfo(`  ${path.relative(process.cwd(), path.join(targetDir, 'assets'))}/`)
+    printInfo('')
+    printInfo('Next steps:')
+    printInfo('  1. Edit SKILLSET.md with your description and remote skill references')
+    printInfo('  2. Add embedded skills as subdirectories (each with their own SKILL.md)')
+    printInfo('  3. Run "skillforge skillset validate" to check your skillset')
+    printInfo('  4. Run "skillforge skillset publish" to publish to the registry')
+  } catch (e) {
+    printError(e instanceof Error ? e.message : String(e))
+    process.exit(1)
+  }
+}
