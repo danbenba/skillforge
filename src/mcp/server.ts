@@ -41,3 +41,9 @@ export async function buildServer(mode: ServerMode): Promise<McpServer> {
 
   return server
 }
+
+export async function startMcpServer(): Promise<void> {
+  const server = await buildServer('local')
+  const transport = new StdioServerTransport()
+  await server.connect(transport)
+}
