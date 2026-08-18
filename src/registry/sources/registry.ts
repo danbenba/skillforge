@@ -99,3 +99,11 @@ export async function getSkillInstallInfo(name: string): Promise<InstallInfo> {
 export async function getSkill(name: string): Promise<RegistrySkill> {
   return registryFetch<RegistrySkill>(`/skills/${encodeURIComponent(name)}`)
 }
+
+export async function publishSkill(token: string, body: PublishBody): Promise<PublishResponse> {
+  return registryFetch<PublishResponse>('/skills', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  })
+}
