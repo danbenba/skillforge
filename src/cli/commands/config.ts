@@ -14,3 +14,11 @@ const VALID_KEYS: Array<keyof SkillForgeConfig> = [
   'anthropicApiKey',
   'defaultScope',
 ]
+
+const KEY_DESCRIPTIONS: Record<keyof SkillForgeConfig, string> = {
+  registryUrl: 'Registry API base URL (overrides SKILLFORGE_REGISTRY_URL)',
+  token: 'Publisher auth token (overrides SKILLFORGE_TOKEN)',
+  anthropicApiKey: 'Anthropic API key for suggest command (overrides ANTHROPIC_API_KEY)',
+  defaultScope:
+    'Default install scope: global, shared, or project (overrides SKILLFORGE_DEFAULT_SCOPE)',
+}
