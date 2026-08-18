@@ -313,3 +313,21 @@ Would you like me to install either of these?
 
 ---
 
+## Troubleshooting
+
+**"Could not connect to MCP server"**
+- Verify the path in `args` is absolute and correct
+- Run `node /path/to/SkillForge/dist/mcp/server.js` directly and check for errors
+- Make sure `npm run build` was run after any changes
+
+**"ANTHROPIC_API_KEY is required"**
+- The `skillforge_suggest` tool requires the API key in the server's environment
+- Add it to the `env` section of your `.mcp.json`
+
+**Tools not appearing in Claude Code**
+- Restart Claude Code after modifying `.mcp.json`
+- Check that the JSON is valid (no trailing commas, etc.)
+- Check Claude Code's MCP server logs
+
+---
+
