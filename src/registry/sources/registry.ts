@@ -51,3 +51,8 @@ export interface PublishBody {
   source_url: string
   tags?: string[]
 }
+
+export interface PublishResponse {
+  skill: RegistrySkill
+  diagnostics: Array<{ level: string; line?: number; message: string }>
+}
