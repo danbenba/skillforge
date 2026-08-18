@@ -25,3 +25,13 @@ export interface ValidationDiagnostic {
   message: string
   check: string
 }
+
+export interface ValidationResult {
+  skill: string
+  score: number
+  diagnostics: ValidationDiagnostic[]
+  specVersion: string
+  passCount: number
+  warnCount: number
+  errorCount: number
+}
