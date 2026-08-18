@@ -152,3 +152,9 @@ export interface SkillsetSearchResponse {
   limit: number
   offset: number
 }
+
+export interface PublishSkillsetBody {
+  name: string
+  source_url: string
+  tags?: string[]
+}
