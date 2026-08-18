@@ -10,3 +10,5 @@ import { readServerEnv } from '../core/env.js'
 
 const require = createRequire(import.meta.url)
 const { version } = require('../../package.json') as { version: string }
+
+export type ServerMode = 'local' | 'remote'
