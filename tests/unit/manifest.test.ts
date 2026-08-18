@@ -68,3 +68,19 @@ describe('writeManifest + readManifest', () => {
     expect(read.skills['test-skill'].score).toBe(90)
   })
 })
+
+describe('addSkillToManifest', () => {
+  it('adds a skill and persists it', async () => {
+    await addSkillToManifest(scopeConfig, makeSkill('new-skill'))
+    const m = await readManifest(scopeConfig)
+    expect('new-skill' in m.skills).toBe(true)
+  })
+
+  it('overwrites an existing skill', async () => {
+    await addSkillToManifest(scopeConfig, makeSkill('skill-a'))
+    const updated = { ...makeSkill('skill-a'), score: 50 }
+    await addSkillToManifest(scopeConfig, updated)
+    const m = await readManifest(scopeConfig)
+    expect(m.skills['skill-a'].score).toBe(50)
+  })
+})
