@@ -27,3 +27,8 @@ beforeEach(async () => {
   mocks.installFromGitUrl.mockReset()
   mocks.resolveScope.mockReset()
 })
+
+afterEach(async () => {
+  await rm(tmpDir, { recursive: true, force: true })
+  vi.restoreAllMocks()
+})
