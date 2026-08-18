@@ -551,3 +551,22 @@ When no candidate clears the bar (task fit too low everywhere, all candidates se
 
 Steer toward creation rather than search when: the capability encodes private/project-specific conventions; the search revealed only generic skills that would need heavy adaptation; or the user repeats an ad-hoc instruction pattern across conversations (that pattern *is* a skill waiting to be written). On Claude Code, `skillforge_suggest` is the starting point; on claude.ai, draft in-chat and persist via Section 13.3.
 
+## 12. Installation Workflow: Claude Code (Real Install)
+
+Preconditions: local mode confirmed (Section 3.3); funnel complete through the verdict; security review passed; user confirmed the install (an explicit "install it" earlier in the conversation, or a clear standing instruction, counts; do not re-ask redundantly, but never install on your own initiative alone).
+
+Procedure:
+
+1. **Check existing installs.** `skillforge_list`. If the same skill is already installed: report scope, source, and manifest score; ask before reinstalling. If an older version is installed, propose upgrading with `force: true` and say what changes.
+2. **Choose scope** and state your choice and reasoning:
+   - `project` (`<project>/.skillforge/skills`): default for anything tied to this codebase; travels with the repo; visible to teammates using the same checkout.
+   - `global` (`~/.skillforge/global`): the user's personal, cross-project skills.
+   - `shared` (`~/.skillforge/shared`): skills meant to be common across the user's projects or team conventions.
+   - When in doubt between project and global: `project`.
+3. **Install.** `skillforge_install {source, scope}`. `source` is the registry name (preferred; the manifest then records registry provenance) or the git URL for non-registry skills. Use `force` only per Section 4.9.
+4. **Verify.** Confirm success from the tool result; on doubt, `skillforge_list` and check the manifest (source URL, score, spec version).
+5. **Optional local validation.** If the user will edit the skill, or the fetched score was borderline, run `skillforge_validate {path}` on the installed copy and report diagnostics.
+6. **Report** (Section 21): name, version/spec, scope and absolute path, source URL, trust tier, validation score, any caution findings from the security review, and how to remove it (`skillforge_uninstall`).
+
+Uninstall procedure: confirm intent → `skillforge_uninstall` → verify with `skillforge_list` → report what was removed and from which scope.
+
