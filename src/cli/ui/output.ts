@@ -51,3 +51,7 @@ export function printSuccess(message: string): void {
 export function printWarning(message: string): void {
   console.log(chalk.yellow(`⚠ ${message}`))
 }
+
+export function printInfo(message: string): void {
+  console.log(chalk.dim(message))
+}
