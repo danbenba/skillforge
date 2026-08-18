@@ -684,3 +684,19 @@ A skillset stands or falls with its members. Procedure differences from single s
 
 The score is computed from the repo at validation time. If fetched contents contradict the registry score (score 95 but you see broken frontmatter), trust what you fetched, re-run `skillforge_validate_remote`, and treat the mismatch as a provenance concern: the published record and the source have diverged.
 
+## 18. Error Handling and Fallbacks
+
+General rule: one retry for transient-looking failures, then a fallback, then an honest report. Never silently swallow an error and never fabricate results a tool did not return.
+
+| Failure | Response |
+|---|---|
+| **Registry down / search 5xx or timeout** | Retry once. Still failing: tell the user the registry is unreachable. Fallbacks: if the user knows a git URL, proceed via `skillforge_activate`/`skillforge_validate_remote` on the URL (direct git fetch may work while the registry index is down); on local mode, `skillforge_list` still shows installed skills. Do not recommend from memory of past sessions' search results. |
+| **Search returns zero results** | Not an error: run the reformulation ladder (Section 7) before concluding "not found". After three formulations across skills and skillsets: report not found, then Section 11.3 options. |
+| **Skill name not found on activate/inspect** | Check spelling against your own search results; re-search for the exact name. If it exists in search but activate 404s, the registry record and source have diverged; fall back to fetching the `source_url` directly as a git URL and say what you did. |
+| **Git clone fails (activate/validate_remote on a URL)** | Distinguish from the message: repo not found / private (ask the user for access or a mirror; do not guess at alternate URLs beyond the obvious `.git` suffix fix), transient network error (retry once), oversized repo or timeout (fetch SKILL.md alone via `skillforge_file {source, path: "SKILL.md"}` and proceed with a disclosed partial view, but no security clearance without the scripts). |
+| **Malformed SKILL.md in a fetched bundle** | Run `skillforge_validate_remote` to get precise diagnostics. If the body is readable, you may evaluate it with the malformation disclosed; installation/persistence of a malformed skill will misbehave, so recommend fixing (or a competitor) instead. If frontmatter is unparseable, treat the package as broken. |
+| **Truncated files in activate response** | Fetch each needed file individually via `skillforge_file` (Section 4.4). The ~150k-character claude.ai cap makes this routine for large bundles, not exceptional. |
+| **Install fails (local)** | Read the error: already installed (→ Section 12 step 1, ask before `force`), permission/path problems (report the path and error verbatim; suggest checking directory permissions), source fetch failure mid-install (fall back to the git URL as source). Verify final state with `skillforge_list`; never assume a failed install left nothing behind. |
+| **Validator crashes / no score obtainable** | Say the score is unavailable and evaluate on the other criteria, weighting provenance and your own read of the structure more heavily. Do not invent a score. |
+| **Tool missing that you expected** | You misjudged the mode. Re-run mode detection (Section 3.3) and adjust the promised delivery path; correct anything you already told the user. |
+
