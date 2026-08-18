@@ -39,3 +39,26 @@ describe('readConfig', () => {
     expect(config.defaultScope).toBe('global')
   })
 })
+
+describe('writeConfig', () => {
+  it('round-trips all fields', async () => {
+    const { writeConfig, readConfig } = await import('../../src/core/config.js')
+    const original = {
+      registryUrl: 'https://my-registry.dev/v1',
+      token: 'tok_abc123',
+      anthropicApiKey: 'sk-ant-xyz',
+      defaultScope: 'shared' as const,
+    }
+    await writeConfig(original)
+    const result = await readConfig()
+    expect(result).toEqual(original)
+  })
+
+  it('overwrites existing values', async () => {
+    const { writeConfig, readConfig } = await import('../../src/core/config.js')
+    await writeConfig({ defaultScope: 'global' })
+    await writeConfig({ defaultScope: 'project' })
+    const config = await readConfig()
+    expect(config.defaultScope).toBe('project')
+  })
+})
