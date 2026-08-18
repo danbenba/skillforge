@@ -5,3 +5,4 @@ import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const fixturesDir = path.join(__dirname, '..', 'fixtures')
