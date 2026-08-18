@@ -67,3 +67,33 @@ skillforge suggest
 
 Scopes: `global` (`~/.skillforge/global`), `shared` (`~/.skillforge/shared`), `project` (`<repo>/.skillforge`). Details in [docs/scoping.md](docs/scoping.md).
 
+## Deployment
+
+With Docker:
+
+```bash
+git clone https://github.com/danbenba/skillforge.git
+cd skillforge
+cp .env.example .env    # set SKILLFORGE_ENV=prod and SKILLFORGE_PUBLIC_URL
+docker compose up -d --build
+```
+
+Without Docker:
+
+```bash
+npm install
+npm run build
+npm run serve
+```
+
+Put HTTPS in front with your usual reverse proxy (Traefik, Caddy, nginx). A `nixpacks.toml` is included for Dokploy and Railway style platforms.
+
+Endpoints:
+
+| Route | Purpose |
+|---|---|
+| `POST /mcp` | MCP Streamable HTTP endpoint |
+| `GET /health` | Health check |
+| `GET /` | Landing page |
+| `GET /logo.svg`, `/favicon.ico` | Brand assets. claude.ai picks up the connector icon from the domain favicon, so keep these reachable. |
+
