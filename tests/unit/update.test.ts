@@ -42,3 +42,17 @@ function makeScopeConfig(level: 'global' | 'shared' | 'project'): ScopeConfig {
     skillsetsDir: path.join(tmpDir, level, 'skillsets'),
   }
 }
+
+function makeSkill(overrides: Partial<InstalledSkill> = {}): InstalledSkill {
+  return {
+    name: 'test-skill',
+    version: '1.0.0',
+    source: 'community',
+    sourceUrl: 'https://github.com/user/test-skill',
+    installedAt: new Date().toISOString(),
+    specVersion: '1.0',
+    score: 85,
+    path: 'skills/test-skill',
+    ...overrides,
+  }
+}
