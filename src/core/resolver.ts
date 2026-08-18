@@ -15,3 +15,13 @@ function globalBase(): string {
 function sharedBase(): string {
   return path.join(os.homedir(), '.skillforge', 'shared')
 }
+
+function makeScopeConfig(level: ScopeLevel, rootPath: string): ScopeConfig {
+  return {
+    level,
+    rootPath,
+    manifestPath: path.join(rootPath, MANIFEST_FILE),
+    skillsDir: path.join(rootPath, SKILLS_DIR),
+    skillsetsDir: path.join(rootPath, SKILLSETS_DIR),
+  }
+}
