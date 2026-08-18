@@ -11,3 +11,13 @@ import type {
 export const SKILLSET_SPEC_VERSION = '1.0'
 const SKILLSET_MD = 'SKILLSET.md'
 const MIN_DESCRIPTION_WORDS = 30
+
+const WEIGHTS = {
+  frontmatterParseable: 25,
+  namePresent: 10,
+  descriptionPresent: 10,
+  descriptionLength: 10,
+  hasSkills: 20,
+  allowedSubdirs: 10,
+  validSourceUrls: 15,
+} as const
