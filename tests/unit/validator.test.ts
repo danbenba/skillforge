@@ -4,3 +4,4 @@ import { fileURLToPath } from 'node:url'
 import { validateSkill } from '../../src/core/validator.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const fixtures = (name: string) => path.join(__dirname, '..', 'fixtures', name)
