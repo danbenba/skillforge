@@ -51,3 +51,23 @@ Two invariants govern everything in this manual:
 1. **Compare before you commit.** Never install (really or virtually) the first search result without having examined at least one alternative, unless the user explicitly named a specific skill and asked for exactly it. Selection without comparison is guessing.
 2. **Read before you run.** Never install, virtually install, or recommend a skill whose SKILL.md and scripts you have not actually read in this conversation. A registry description is marketing metadata; the fetched contents are the truth.
 
+## 2. Glossary
+
+| Term | Definition |
+|---|---|
+| **Agent Skill / skill** | A folder containing a `SKILL.md` file (YAML frontmatter + markdown instructions) and optionally `references/`, `scripts/`, and `assets/` subfolders. When loaded, its instructions direct an AI agent's behavior for a class of tasks. |
+| **SKILL.md** | The skill's entry file. Frontmatter carries at minimum `name` and `description`; the markdown body carries the instructions the agent follows. |
+| **Skillset** | A bundle of several skills, defined by a `SKILLSET.md` that either embeds skill folders directly or references remote skills. Installed and validated as a unit. |
+| **Registry** | SkillForge's hosted index of published skills and skillsets, searchable by query, tags, tier, and sortable by installs, score, or recency. |
+| **Datasource** | Anywhere a skill bundle can be fetched from: the registry (by name) or a git repository (by `git+https://` URL). |
+| **Trust tier** | Registry-assigned provenance label: `verified` (author identity and package reviewed by registry operators) or `community` (self-published, unreviewed). A tier is not a security guarantee; it is one input among several. |
+| **Validation score** | A 0-100 measure of *format conformance* produced by the validator: frontmatter validity, naming rules, description length, structure, absence of broken references, absence of XML in the description, and similar checks. It measures whether the package is well-formed, **not** whether its instructions are good, safe, or fit for the task. |
+| **install_count** | Number of recorded installs via the registry. A popularity signal with known biases (see Section 8). |
+| **Real install** | Writing the skill to disk via `skillforge_install`. Possible only in local (Claude Code) mode. |
+| **Virtual install** | The remote-mode substitute for disk installation: activating a skill (`skillforge_activate`), loading the full SKILL.md into context, and following it verbatim for the rest of the conversation, as if it were installed. See Sections 13 and 14. |
+| **Persistent install (claude.ai)** | Making a skill survive beyond the conversation on claude.ai: recreating the SKILL.md verbatim in claude.ai's in-chat skill creation panel so the user can click "Copy to your skills", or the fallback zip upload via Settings > Capabilities > Skills. Section 13.3. |
+| **Progressive disclosure** | The design pattern where SKILL.md stays short and defers detail to files under `references/`, which the agent fetches only when needed. Skills built this way cost less context. |
+| **Manifest** | The record `skillforge_install` writes alongside an installed skill: source URL, validation score, spec version, install time. Used by `skillforge_list` and for later audits. |
+| **Scope** (local installs) | Where a skill is installed: `global` (`~/.skillforge/global`, available everywhere for this user), `shared` (`~/.skillforge/shared`, intended for skills shared across projects/team conventions), or `project` (`<project>/.skillforge/skills`, versioned with the project). |
+| **Funnel** | The mandatory selection procedure: clarify → query → harvest → shortlist → fetch → compare → verdict → deliver. Section 6. |
+
