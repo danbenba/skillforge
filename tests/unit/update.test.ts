@@ -56,3 +56,13 @@ function makeSkill(overrides: Partial<InstalledSkill> = {}): InstalledSkill {
     ...overrides,
   }
 }
+
+async function setupManifestWithSkill(skill: InstalledSkill) {
+  const scopeConfig = makeScopeConfig('project')
+  await mkdir(scopeConfig.rootPath, { recursive: true })
+  const { writeManifest, createEmptyManifest } = await import('../../src/core/manifest.js')
+  const manifest = createEmptyManifest('project')
+  manifest.skills[skill.name] = skill
+  await writeManifest(scopeConfig, manifest)
+  return scopeConfig
+}
