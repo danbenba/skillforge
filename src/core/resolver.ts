@@ -7,3 +7,7 @@ const SKILLFORGE_DIR = '.skillforge'
 const MANIFEST_FILE = 'skillforge.json'
 const SKILLS_DIR = 'skills'
 const SKILLSETS_DIR = 'skillsets'
+
+function globalBase(): string {
+  return path.join(os.homedir(), '.skillforge', 'global')
+}
