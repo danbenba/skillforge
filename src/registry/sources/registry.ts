@@ -56,3 +56,23 @@ export interface PublishResponse {
   skill: RegistrySkill
   diagnostics: Array<{ level: string; line?: number; message: string }>
 }
+
+async function registryFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const base = await getRegistryBase()
+  const url = `${base}${path}`
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    ...options,
+  })
+
+  if (!res.ok) {
+    let message = `Registry error ${res.status}`
+    try {
+      const body = (await res.json()) as { error?: string }
+      if (body.error) message = body.error
+    } catch {}
+    throw new Error(message)
+  }
+
+  return res.json() as Promise<T>
+}
