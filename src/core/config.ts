@@ -8,3 +8,7 @@ export interface SkillForgeConfig {
   anthropicApiKey?: string
   defaultScope?: 'global' | 'shared' | 'project'
 }
+
+function getConfigPath(): string {
+  return path.join(os.homedir(), '.skillforge', 'config.json')
+}
