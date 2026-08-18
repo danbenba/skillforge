@@ -21,3 +21,15 @@ async function detectSourceUrl(skillsetPath: string): Promise<string | null> {
     return null
   }
 }
+
+async function readSkillsetName(skillsetPath: string): Promise<string | null> {
+  try {
+    const content = await readFile(join(skillsetPath, 'SKILLSET.md'), 'utf-8')
+    const match = content.match(/^---\n([\s\S]*?)\n---/)
+    if (!match) return null
+    const fm = parseYaml(match[1]) as Record<string, unknown>
+    return typeof fm['name'] === 'string' ? fm['name'] : null
+  } catch {
+    return null
+  }
+}
