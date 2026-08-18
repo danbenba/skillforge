@@ -97,3 +97,19 @@ Endpoints:
 | `GET /` | Landing page |
 | `GET /logo.svg`, `/favicon.ico` | Brand assets. claude.ai picks up the connector icon from the domain favicon, so keep these reachable. |
 
+## Configuration
+
+Everything is driven by `.env` (see [.env.example](.env.example)):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `SKILLFORGE_ENV` | `dev` | `dev` binds 127.0.0.1 with verbose logs, `prod` binds 0.0.0.0 with quiet logs |
+| `SKILLFORGE_PORT` | `8765` | HTTP port |
+| `SKILLFORGE_HOST` | mode default | Bind address override |
+| `SKILLFORGE_PUBLIC_URL` | `http://localhost:8765` | Public URL; the connector URL is this plus `/mcp` |
+| `SKILLFORGE_REGISTRY_URL` | built-in | Registry API base, if you host your own |
+| `SKILLFORGE_AUTH_TOKEN` | empty | When set, `/mcp` requires this bearer token |
+| `SKILLFORGE_BUNDLE_FILE_LIMIT` | `49152` | Max bytes per inlined skill file |
+| `SKILLFORGE_BUNDLE_TOTAL_LIMIT` | `262144` | Max bytes per skill bundle |
+| `ANTHROPIC_API_KEY` | empty | Only needed for `skillforge_suggest` |
+
