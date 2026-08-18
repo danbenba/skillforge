@@ -8,3 +8,4 @@ const SKILL_MD = 'SKILL.md'
 const ALLOWED_SUBDIRS = new Set(['scripts', 'references', 'assets'])
 const MAX_LINES = 500
 const WARN_LINES = 400
+const MIN_DESCRIPTION_WORDS = 30
