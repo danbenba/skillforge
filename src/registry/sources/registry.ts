@@ -45,3 +45,9 @@ export interface InstallInfo {
   spec_version: string
   trust_tier: 'verified' | 'community'
 }
+
+export interface PublishBody {
+  name: string
+  source_url: string
+  tags?: string[]
+}
