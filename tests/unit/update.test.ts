@@ -9,3 +9,7 @@ const mocks = vi.hoisted(() => ({
   installFromGitUrl: vi.fn(),
   resolveScope: vi.fn(),
 }))
+
+vi.mock('../../src/registry/sources/github.js', () => ({
+  installFromGitUrl: mocks.installFromGitUrl,
+}))
