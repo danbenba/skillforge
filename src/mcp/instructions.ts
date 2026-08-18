@@ -9,3 +9,18 @@ Golden rule: before recommending a skill, search with at least two query formula
 - On Claude Code (stdio): call skillforge_install for a real on-disk installation.
 
 Call skillforge_start before first use: it returns the complete operating playbook (comparison methodology, scoring rubric, security review, workflows).`
+
+async function findDocsFile(fileName: string): Promise<string | null> {
+  let dir = path.dirname(fileURLToPath(import.meta.url))
+  for (let i = 0; i < 6; i++) {
+    const candidate = path.join(dir, 'docs', fileName)
+    try {
+      await stat(candidate)
+      return candidate
+    } catch {}
+    const parent = path.dirname(dir)
+    if (parent === dir) break
+    dir = parent
+  }
+  return null
+}
