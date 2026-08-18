@@ -513,3 +513,41 @@ Rules:
 4. Include the losing candidates' redeeming point when real; the user may weight criteria differently than the rubric, and your table should let them overrule you intelligently.
 5. For a single-candidate funnel (Section 6.4.5), show the same rows for the one candidate against a "no skill / do it directly" column so the user still sees a comparison.
 
+## 11. Verdicts, Tie-Breaking, and Recommending Nothing
+
+### 11.1 The verdict
+
+Recommend the highest weighted total **unless** your holistic reading disagrees, in which case say so and explain: the rubric is your instrument, not your master. Never recommend: a security-failed candidate; a task-fit ≤ 3 candidate; a candidate whose scripts you have not fully read.
+
+### 11.2 Tie-breaking ladder
+
+When totals are within ~5 points, break the tie in this order and stop at the first rung that separates them:
+
+1. **Task fit sub-score.** The rubric already weights it most; at a tie, re-read both bodies against the target sentence and pick the closer.
+2. **Environment feasibility.** The skill that works fully in the *current* host beats the one with steps this host cannot execute.
+3. **Token weight.** Lighter wins; the user pays this cost on every turn.
+4. **Trust tier / provenance.** Verified or better-provenanced wins.
+5. **Maintenance.** More recently and consistently maintained wins.
+6. **Popularity.** Last rung, coarse tiers only.
+7. Still tied → present both candidates as equivalent, name the deciding preference ("pick by whether you want examples in French"), and let the user choose. A coin-flip honestly presented beats false confidence.
+
+### 11.3 Recommending nothing
+
+When no candidate clears the bar (task fit too low everywhere, all candidates security-failed, or quality uniformly poor), **say so plainly.** "None of the available skills fit; here's why, and here's what I suggest instead" is a first-class outcome of the funnel, and it is always better than force-fitting a bad skill whose instructions will steer the conversation wrong for hours. Then offer, in order of usual usefulness:
+
+1. **Do the task directly.** Most tasks don't need a skill; you can just do the work. Offer this first.
+2. **Best-effort partial:** the closest candidate, with an explicit statement of what it will and won't cover. Offer this only if the user prefers a scaffold over nothing.
+3. **Create one.** On Claude Code, offer `skillforge_suggest {projectPath}` to generate tailored draft skills from the codebase, then review, `skillforge_validate`, refine, and install the draft. On claude.ai, offer to draft a SKILL.md by hand in the conversation, which the user can persist via the panel path (Section 13.3).
+4. **Widen the datasource:** ask whether the user knows of a git repo to check by URL.
+
+### 11.4 Skillset vs single skill vs combination
+
+- Recommend a **single skill** when the need is one capability. Never install a 6-skill set for a 1-skill need; the unused members cost context (real installs) and attack surface for nothing.
+- Recommend a **skillset** when the need genuinely spans most of its members, the members are coherent (same conventions, same author-voice, designed to interlock), and each member individually passes review (Section 16).
+- Recommend a **combination of individual skills** when the need spans capabilities but the best-of-breed skills come from different authors and no coherent set covers them. Warn about conflict risk (Section 15) and check convention compatibility (two skills imposing different commit-message formats will fight).
+- Decide by comparing the best skillset against the best combination on the same rubric: score the skillset as the sum of what it actually contributes minus its dead weight.
+
+### 11.5 When the user should build their own
+
+Steer toward creation rather than search when: the capability encodes private/project-specific conventions; the search revealed only generic skills that would need heavy adaptation; or the user repeats an ad-hoc instruction pattern across conversations (that pattern *is* a skill waiting to be written). On Claude Code, `skillforge_suggest` is the starting point; on claude.ai, draft in-chat and persist via Section 13.3.
+
