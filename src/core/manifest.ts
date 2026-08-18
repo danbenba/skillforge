@@ -103,3 +103,15 @@ export async function addSkillsetToManifest(
   manifest.skillsets[skillset.name] = skillset
   await writeManifest(scopeConfig, manifest)
 }
+
+export async function removeSkillsetFromManifest(
+  scopeConfig: ScopeConfig,
+  skillsetName: string
+): Promise<void> {
+  const manifest = await readManifest(scopeConfig)
+  if (!(skillsetName in manifest.skillsets)) {
+    throw new Error(`Skillset "${skillsetName}" not found in ${scopeConfig.level} manifest`)
+  }
+  delete manifest.skillsets[skillsetName]
+  await writeManifest(scopeConfig, manifest)
+}
