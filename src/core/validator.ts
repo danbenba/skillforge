@@ -388,3 +388,9 @@ async function checkSubdirectories(skillPath: string): Promise<SubdirResult> {
   } catch {}
   return { unknownDirs, hasReadme }
 }
+
+interface BrokenRef {
+  line: number
+  ref: string
+  reason: string
+}
