@@ -126,3 +126,26 @@ export async function installSkillsetFromPath(
     alreadyExisted,
   }
 }
+
+export async function uninstallSkillset(skillsetName: string, scope: ScopeLevel): Promise<void> {
+  const scopeConfig = await resolveScope(scope)
+  const manifest = await readManifest(scopeConfig)
+
+  if (!(skillsetName in manifest.skillsets)) {
+    throw new Error(`Skillset "${skillsetName}" is not installed at ${scope} scope`)
+  }
+
+  const skillset = manifest.skillsets[skillsetName]
+
+  const allSkillNames = [...skillset.embeddedSkills, ...skillset.remoteSkills]
+  for (const skillName of allSkillNames) {
+    try {
+      await uninstallSkill(skillName, scope)
+    } catch {}
+  }
+
+  const skillsetDir = path.join(scopeConfig.skillsetsDir, skillsetName)
+  await rm(skillsetDir, { recursive: true, force: true })
+
+  await removeSkillsetFromManifest(scopeConfig, skillsetName)
+}
