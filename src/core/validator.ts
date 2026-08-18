@@ -28,3 +28,267 @@ const WEIGHTS = {
   referencedResourcesExist: 7,
   bundledResourcesCorrect: 2,
 } as const
+
+export async function validateSkill(skillPath: string): Promise<ValidationResult> {
+  const diagnostics: ValidationDiagnostic[] = []
+  let score = 0
+
+  const absPath = path.resolve(skillPath)
+
+  try {
+    const s = await stat(absPath)
+    if (!s.isDirectory()) {
+      return fatal(skillPath, `Path is not a directory: ${absPath}`)
+    }
+  } catch {
+    return fatal(skillPath, `Path does not exist: ${absPath}`)
+  }
+
+  const skillMdPath = path.join(absPath, SKILL_MD)
+  let content: string
+  try {
+    content = await readFile(skillMdPath, 'utf8')
+  } catch {
+    return fatal(skillPath, `SKILL.md not found in ${absPath}`)
+  }
+
+  const lines = content.split('\n')
+  const lineCount = lines.length
+
+  const { frontmatter, frontmatterEndLine, parseError } = extractFrontmatter(content, lines)
+
+  if (parseError || frontmatter === null) {
+    return {
+      skill: path.basename(absPath),
+      score: 0,
+      diagnostics: [
+        {
+          severity: 'error',
+          line: 1,
+          message: parseError ?? 'Missing YAML frontmatter: file must start with ---',
+          check: 'yaml-frontmatter',
+        },
+      ],
+      specVersion: SPEC_VERSION,
+      passCount: 0,
+      warnCount: 0,
+      errorCount: 1,
+    }
+  } else {
+    score += WEIGHTS.frontmatterParseable
+    diagnostics.push({
+      severity: 'pass',
+      message: 'YAML frontmatter valid',
+      check: 'yaml-frontmatter',
+    })
+
+    const nameValue = frontmatter.name == null ? '' : String(frontmatter.name).trim()
+    const nameLine = findFieldLine(lines, 'name', frontmatterEndLine)
+    if (nameValue === '') {
+      diagnostics.push({
+        severity: 'error',
+        line: nameLine,
+        message: 'Required field "name" is missing or empty',
+        check: 'name-present',
+      })
+    } else {
+      score += WEIGHTS.namePresent
+      diagnostics.push({
+        severity: 'pass',
+        message: 'name field present',
+        check: 'name-present',
+      })
+
+      const nameErrors: string[] = []
+      if (!KEBAB_CASE.test(nameValue)) {
+        nameErrors.push(
+          `name "${nameValue}" is not kebab-case: use lowercase letters, digits, and hyphens only`
+        )
+      }
+      const reserved = RESERVED_NAME_WORDS.find((w) => nameValue.toLowerCase().includes(w))
+      if (reserved) {
+        nameErrors.push(
+          `name contains reserved word "${reserved}": "claude" and "anthropic" are reserved`
+        )
+      }
+      if (nameErrors.length > 0) {
+        for (const message of nameErrors) {
+          diagnostics.push({ severity: 'error', line: nameLine, message, check: 'name-format' })
+        }
+      } else {
+        score += WEIGHTS.nameFormat
+        diagnostics.push({
+          severity: 'pass',
+          message: 'name is kebab-case and uses no reserved words',
+          check: 'name-format',
+        })
+      }
+    }
+
+    const descLine = findFieldLine(lines, 'description', frontmatterEndLine)
+    const descValue = frontmatter.description == null ? '' : String(frontmatter.description).trim()
+    if (descValue === '') {
+      diagnostics.push({
+        severity: 'error',
+        line: descLine,
+        message: 'Required field "description" is missing or empty',
+        check: 'description-present',
+      })
+    } else {
+      score += WEIGHTS.descriptionPresent
+      const wordCount = descValue.split(/\s+/).length
+      if (wordCount < MIN_DESCRIPTION_WORDS) {
+        diagnostics.push({
+          severity: 'error',
+          line: descLine,
+          message: `description too short (current: ${wordCount} words, recommended: ${MIN_DESCRIPTION_WORDS}+)`,
+          check: 'description-length',
+        })
+      } else {
+        score += WEIGHTS.descriptionLength
+        diagnostics.push({
+          severity: 'pass',
+          message: `description meets length requirement (${wordCount} words)`,
+          check: 'description-length',
+        })
+      }
+
+      const descErrors: string[] = []
+      if (descValue.length > MAX_DESCRIPTION_CHARS) {
+        descErrors.push(
+          `description exceeds ${MAX_DESCRIPTION_CHARS} characters (current: ${descValue.length})`
+        )
+      }
+      if (/[<>]/.test(descValue)) {
+        descErrors.push(
+          'description contains XML angle brackets (< >): not allowed in frontmatter'
+        )
+      }
+      if (descErrors.length > 0) {
+        for (const message of descErrors) {
+          diagnostics.push({
+            severity: 'error',
+            line: descLine,
+            message,
+            check: 'description-format',
+          })
+        }
+      } else {
+        score += WEIGHTS.descriptionFormat
+        diagnostics.push({
+          severity: 'pass',
+          message: 'description is within the character limit and free of XML tags',
+          check: 'description-format',
+        })
+      }
+    }
+  }
+
+  if (lineCount > MAX_LINES) {
+    diagnostics.push({
+      severity: 'error',
+      message: `SKILL.md is ${lineCount} lines: exceeds ${MAX_LINES} line limit`,
+      check: 'line-count',
+    })
+  } else if (lineCount > WARN_LINES) {
+    score += WEIGHTS.lineCount
+    diagnostics.push({
+      severity: 'warning',
+      message: `SKILL.md is ${lineCount} lines: approaching ${MAX_LINES} line limit`,
+      check: 'line-count',
+    })
+  } else {
+    score += WEIGHTS.lineCount
+    diagnostics.push({
+      severity: 'pass',
+      message: `SKILL.md line count OK (${lineCount} lines)`,
+      check: 'line-count',
+    })
+  }
+
+  const subDirResult = await checkSubdirectories(absPath)
+  if (subDirResult.unknownDirs.length > 0) {
+    for (const dir of subDirResult.unknownDirs) {
+      diagnostics.push({
+        severity: 'warning',
+        message: `Unknown subdirectory "${dir}": only scripts/, references/, assets/ are allowed`,
+        check: 'allowed-subdirs',
+      })
+    }
+
+    const deduction = Math.min(WEIGHTS.allowedSubdirs, subDirResult.unknownDirs.length * 2)
+    score += Math.max(0, WEIGHTS.allowedSubdirs - deduction)
+  } else {
+    score += WEIGHTS.allowedSubdirs
+    diagnostics.push({
+      severity: 'pass',
+      message: 'Folder structure matches convention',
+      check: 'allowed-subdirs',
+    })
+  }
+
+  if (subDirResult.hasReadme) {
+    diagnostics.push({
+      severity: 'warning',
+      message:
+        'README.md should not be inside the skill folder: put docs in SKILL.md or references/',
+      check: 'no-readme',
+    })
+  } else {
+    score += WEIGHTS.noReadme
+    diagnostics.push({
+      severity: 'pass',
+      message: 'No README.md inside the skill folder',
+      check: 'no-readme',
+    })
+  }
+
+  const brokenRefs = await checkBrokenReferences(content, absPath, lines)
+  if (brokenRefs.length > 0) {
+    for (const ref of brokenRefs) {
+      diagnostics.push({
+        severity: 'error',
+        line: ref.line,
+        message: `references ${ref.ref} but ${ref.reason}`,
+        check: 'referenced-resources',
+      })
+    }
+  } else {
+    score += WEIGHTS.referencedResourcesExist
+    diagnostics.push({
+      severity: 'pass',
+      message: 'All referenced resources exist',
+      check: 'referenced-resources',
+    })
+  }
+
+  const misplacedFiles = await checkBundledResourceStructure(absPath)
+  if (misplacedFiles.length > 0) {
+    for (const f of misplacedFiles) {
+      diagnostics.push({
+        severity: 'warning',
+        message: `File "${f}" appears to be misplaced: check it belongs in scripts/, references/, or assets/`,
+        check: 'bundled-resources',
+      })
+    }
+  } else {
+    score += WEIGHTS.bundledResourcesCorrect
+    diagnostics.push({
+      severity: 'pass',
+      message: 'Bundled resources in correct subdirectories',
+      check: 'bundled-resources',
+    })
+  }
+
+  score = Math.min(100, Math.max(0, Math.round(score)))
+
+  return {
+    skill: path.basename(absPath),
+    score,
+    diagnostics,
+    specVersion: SPEC_VERSION,
+    passCount: diagnostics.filter((d) => d.severity === 'pass').length,
+    warnCount: diagnostics.filter((d) => d.severity === 'warning').length,
+    errorCount: diagnostics.filter((d) => d.severity === 'error').length,
+  }
+}
