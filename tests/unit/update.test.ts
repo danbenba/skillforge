@@ -32,3 +32,13 @@ afterEach(async () => {
   await rm(tmpDir, { recursive: true, force: true })
   vi.restoreAllMocks()
 })
+
+function makeScopeConfig(level: 'global' | 'shared' | 'project'): ScopeConfig {
+  return {
+    level,
+    rootPath: path.join(tmpDir, level),
+    manifestPath: path.join(tmpDir, level, 'skillforge.json'),
+    skillsDir: path.join(tmpDir, level, 'skills'),
+    skillsetsDir: path.join(tmpDir, level, 'skillsets'),
+  }
+}
