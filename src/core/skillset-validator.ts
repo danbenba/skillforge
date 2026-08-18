@@ -249,3 +249,18 @@ function extractFrontmatter(content: string, lines: string[]): FrontmatterResult
     }
   }
 }
+
+async function discoverEmbeddedSkills(skillsetPath: string): Promise<string[]> {
+  const embedded: string[] = []
+  try {
+    const entries = await readdir(skillsetPath, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      try {
+        await stat(path.join(skillsetPath, entry.name, 'SKILL.md'))
+        embedded.push(entry.name)
+      } catch {}
+    }
+  } catch {}
+  return embedded
+}
