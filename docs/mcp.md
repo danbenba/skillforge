@@ -6,3 +6,77 @@ The server is **agent-agnostic**. It communicates over stdio and speaks plain MC
 
 ---
 
+## Setup
+
+### 1. Install SkillForge
+
+```bash
+npm install -g skillforge
+```
+
+Or from source:
+
+```bash
+git clone https://github.com/danbenba/skillforge.git
+cd skillforge
+npm install && npm run build
+npm link
+```
+
+### 2. Register the server with your agent
+
+The server is launched with `skillforge mcp` (a stdio server). Point your agent's MCP config at that command.
+
+**Claude Code**: `.mcp.json` in the project root, or the global `~/.claude/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "skillforge": {
+      "command": "skillforge",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+**Codex**: `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.skillforge]
+command = "skillforge"
+args = ["mcp"]
+```
+
+The `ANTHROPIC_API_KEY` environment variable is only needed if you use the `skillforge_suggest` tool. Add it via the config's `env` block:
+
+```json
+{
+  "mcpServers": {
+    "skillforge": {
+      "command": "skillforge",
+      "args": ["mcp"],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+```toml
+# Codex equivalent
+[mcp_servers.skillforge]
+command = "skillforge"
+args = ["mcp"]
+env = { ANTHROPIC_API_KEY = "sk-ant-..." }
+```
+
+To point `skillforge_suggest` at a custom Anthropic-compatible endpoint instead, set `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, and optionally `SKILLPM_SUGGEST_MODEL` in the same `env` block. See [suggest.md](suggest.md#custom-endpoints).
+
+### 3. Restart your agent
+
+After saving the config, restart the agent (or reload its MCP servers). The SkillForge tools will appear in the tool list.
+
+---
+
