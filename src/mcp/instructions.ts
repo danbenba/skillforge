@@ -35,6 +35,20 @@ export async function shortInstructions(): Promise<string> {
   }
 }
 
+const FALLBACK_SKILLS_SH_API = `The bundled skills.sh API reference is missing from this installation.
+Consult the live documentation instead: https://www.skills.sh/docs/api
+Key facts: base URL https://skills.sh/api/v1/, all endpoints require a Vercel OIDC bearer token, rate limit 600 req/min.`
+
+export async function skillsShApiDoc(): Promise<string> {
+  const file = await findDocsFile('SKILLS_SH_API.md')
+  if (!file) return FALLBACK_SKILLS_SH_API
+  try {
+    return await readFile(file, 'utf8')
+  } catch {
+    return FALLBACK_SKILLS_SH_API
+  }
+}
+
 export async function playbook(topic?: string): Promise<string> {
   const file = await findDocsFile('PLAYBOOK.md')
   if (!file) return FALLBACK_SHORT

@@ -279,6 +279,19 @@ Search the SkillForge registry for skills.
 
 ---
 
+## Available Resources
+
+For MCP clients that support resource reading, the server exposes:
+
+| URI | Content |
+|---|---|
+| `skillforge://docs/skills-sh-api` | **Mandatory reference** for the skills.sh API — bundled snapshot of [skills.sh/docs/api](https://www.skills.sh/docs/api) (Vercel OIDC authentication, endpoints, rate limits, response shapes). Read it before any request to skills.sh. Served with `priority: 1` annotations (effectively required). |
+| `skill://index.json` | SEP-2640 discovery document: the most installed skills of the registry |
+| `skill://<name>/SKILL.md` | The SKILL.md of a registry skill |
+| `skill://<name>/<path>` | Any auxiliary file of a registry skill |
+
+---
+
 ## Working Directory
 
 The MCP server resolves the `project` scope relative to its working directory when it starts. When launched by Claude Code, this is typically the project root.

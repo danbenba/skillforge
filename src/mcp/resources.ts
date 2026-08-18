@@ -1,8 +1,31 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { searchRegistry } from '../registry/sources/registry.js'
 import { fetchSkillBundle, fetchSkillFile } from '../registry/fetcher.js'
+import { skillsShApiDoc } from './instructions.js'
 
 export function registerSkillResources(server: McpServer): void {
+  server.resource(
+    'skills-sh-api-reference',
+    'skillforge://docs/skills-sh-api',
+    {
+      description:
+        'REQUIRED READING before any call to the skills.sh API: bundled reference of https://www.skills.sh/docs/api (authentication, endpoints, rate limits, response shapes)',
+      mimeType: 'text/markdown',
+      annotations: { audience: ['assistant'], priority: 1 },
+    },
+    async (uri) => {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            mimeType: 'text/markdown',
+            text: await skillsShApiDoc(),
+          },
+        ],
+      }
+    }
+  )
+
   server.resource(
     'skill-index',
     'skill://index.json',

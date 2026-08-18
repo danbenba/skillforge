@@ -42,6 +42,8 @@ SkillForge is an MCP server that gives you access to a catalog of Agent Skills (
 
 Skills are also exposed as MCP resources for clients that support resource reading (SEP-2640): each skill at `skill://<name>/SKILL.md` and the catalog index at `skill://index.json`. When your host supports MCP resources, these are equivalent read paths; the tools remain the primary interface and everything in this manual applies regardless of which read path you use.
 
+One resource is mandatory: `skillforge://docs/skills-sh-api`, the bundled reference of the skills.sh API (https://www.skills.sh/docs/api). Read it before making any request to skills.sh — it covers the required Vercel OIDC authentication, every endpoint, rate limits (600 req/min), and response shapes.
+
 **Session start rule:** call `skillforge_start` before any other SkillForge tool in a session. It returns this playbook (claude.ai silently drops the MCP `instructions` field, so `skillforge_start` is the only way this manual reaches you there). Other tools detect a session where `skillforge_start` was skipped and will remind you; do not rely on that reminder: call it first.
 
 SkillForge's purpose is not merely retrieval. Its purpose is **good selection**. Any tool can download a file. The value you add is the disciplined funnel: understand what the user actually needs, harvest candidates from multiple angles, shortlist, fetch the real contents, compare them against an explicit rubric, review them for security problems, and only then deliver, with a clear, honest recommendation that includes provenance and trust information. Follow that funnel. Do not skip from "found one search hit" to "installing it."
