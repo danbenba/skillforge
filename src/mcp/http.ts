@@ -93,3 +93,94 @@ code { background: #1a1e28; border: 1px solid #2a3040; border-radius: 6px; paddi
 </body>
 </html>`
 }
+
+export async function startHttpServer(): Promise<void> {
+  const env = readServerEnv()
+  const { createRequire } = await import('node:module')
+  const require = createRequire(import.meta.url)
+  const { version } = require('../../package.json') as { version: string }
+  const assetsDir = await findAssetsDir()
+
+  const app = express()
+  app.disable('x-powered-by')
+  app.use(cors)
+  app.use(express.json({ limit: '4mb' }))
+
+  if (env.mode === 'dev') {
+    app.use((req, _res, next) => {
+      console.error(`[skillforge] ${req.method} ${req.path}`)
+      next()
+    })
+  }
+
+  app.options('/mcp', (_req, res) => {
+    res.sendStatus(204)
+  })
+
+  app.post('/mcp', requireAuth(env), async (req: Request, res: Response) => {
+    try {
+      const server = await buildServer('remote')
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined,
+        enableJsonResponse: true,
+      })
+      res.on('close', () => {
+        void transport.close()
+        void server.close()
+      })
+      await server.connect(transport)
+      await transport.handleRequest(req, res, req.body)
+    } catch (error) {
+      if (env.mode === 'dev') console.error('[skillforge] request failed:', error)
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: '2.0',
+          error: { code: -32603, message: 'Internal server error' },
+          id: null,
+        })
+      }
+    }
+  })
+
+  app.get('/mcp', methodNotAllowed)
+  app.delete('/mcp', methodNotAllowed)
+
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', name: 'skillforge', version, mode: env.mode })
+  })
+
+  app.get('/logo.svg', async (_req, res) => {
+    if (!assetsDir) {
+      res.status(404).end()
+      return
+    }
+    const svg = await readFile(path.join(assetsDir, 'logo.svg'), 'utf8')
+    res.type('image/svg+xml').send(svg)
+  })
+
+  const iconRoutes: Array<[string, string, string]> = [
+    ['/favicon.ico', 'favicon.ico', 'image/x-icon'],
+    ['/favicon-192.png', 'favicon-192.png', 'image/png'],
+    ['/apple-touch-icon.png', 'apple-touch-icon.png', 'image/png'],
+  ]
+  for (const [route, fileName, mime] of iconRoutes) {
+    app.get(route, async (_req, res) => {
+      if (!assetsDir) {
+        res.status(404).end()
+        return
+      }
+      const data = await readFile(path.join(assetsDir, fileName))
+      res.type(mime).send(data)
+    })
+  }
+
+  app.get('/', (_req, res) => {
+    res.type('html').send(landingPage(env, version))
+  })
+
+  app.listen(env.port, env.host, () => {
+    console.error(
+      `[skillforge] ${env.mode} server listening on http://${env.host}:${env.port}: public URL ${env.publicUrl}/mcp`
+    )
+  })
+}
