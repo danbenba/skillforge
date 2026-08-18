@@ -14,3 +14,15 @@ function scoreLabel(score: number | null): string {
   if (score >= 50) return chalk.yellow(`${score}/100`)
   return chalk.red(`${score}/100`)
 }
+
+function renderSkillCard(skill: RegistrySkill, index: number): void {
+  console.log(`\n${chalk.bold(skill.name)} ${tierBadge(skill.trust_tier)}`)
+  console.log(`  ${skill.description}`)
+  console.log(
+    `  Score: ${scoreLabel(skill.score)}  ·  Installs: ${skill.install_count}  ·  Spec: v${skill.spec_version}`
+  )
+  if (skill.tags.length > 0) {
+    console.log(`  Tags: ${skill.tags.map((t) => chalk.cyan(t)).join(', ')}`)
+  }
+  console.log(`  ${chalk.dim(`skillforge install ${skill.name}`)}`)
+}
