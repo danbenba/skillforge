@@ -9,3 +9,4 @@ import type {
 } from '../types/skillset.js'
 
 export const SKILLSET_SPEC_VERSION = '1.0'
+const SKILLSET_MD = 'SKILLSET.md'
