@@ -5,3 +5,4 @@ import type { ValidationResult, ValidationDiagnostic, SkillFrontmatter } from '.
 
 export const SPEC_VERSION = '1.0'
 const SKILL_MD = 'SKILL.md'
+const ALLOWED_SUBDIRS = new Set(['scripts', 'references', 'assets'])
