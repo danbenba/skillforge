@@ -12,3 +12,8 @@ let tmpDir: string
 beforeEach(async () => {
   tmpDir = await mkdtemp(path.join(os.tmpdir(), 'skillforge-installer-test-'))
 })
+
+afterEach(async () => {
+  await rm(tmpDir, { recursive: true, force: true })
+  vi.restoreAllMocks()
+})
