@@ -39,3 +39,7 @@ export function printValidationReport(result: ValidationResult): void {
 export function printJson(data: unknown): void {
   console.log(JSON.stringify(data, null, 2))
 }
+
+export function printError(message: string): void {
+  console.error(chalk.red(`Error: ${message}`))
+}
