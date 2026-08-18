@@ -66,3 +66,81 @@ async function setupManifestWithSkill(skill: InstalledSkill) {
   await writeManifest(scopeConfig, manifest)
   return scopeConfig
 }
+
+describe('runUpdate', () => {
+  it('re-installs a skill that has a sourceUrl', async () => {
+    const skill = makeSkill()
+    const scopeConfig = await setupManifestWithSkill(skill)
+
+    mocks.resolveScope.mockResolvedValue(scopeConfig)
+    mocks.installFromGitUrl.mockResolvedValue({
+      skillName: skill.name,
+      scope: 'project',
+      installedPath: path.join(tmpDir, 'project', 'skills', skill.name),
+      validation: {
+        score: 90,
+        skill: skill.name,
+        specVersion: '1.0',
+        diagnostics: [],
+        errorCount: 0,
+        warnCount: 0,
+      },
+      alreadyExisted: true,
+    })
+
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleErr = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { runUpdate } = await import('../../src/cli/commands/update-action.js')
+    await runUpdate(skill.name, { scope: 'project', all: false, json: true })
+
+    expect(mocks.installFromGitUrl).toHaveBeenCalledWith(
+      `git+${skill.sourceUrl}`,
+      expect.objectContaining({ level: 'project' }),
+      expect.objectContaining({ force: true, sourceUrl: skill.sourceUrl })
+    )
+
+    consoleSpy.mockRestore()
+    consoleErr.mockRestore()
+  })
+
+  it('skips a skill without a sourceUrl', async () => {
+    const skill = makeSkill({ source: 'local', sourceUrl: undefined })
+    const scopeConfig = await setupManifestWithSkill(skill)
+
+    mocks.resolveScope.mockResolvedValue(scopeConfig)
+
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleErr = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { runUpdate } = await import('../../src/cli/commands/update-action.js')
+    await runUpdate(skill.name, { scope: 'project', all: false, json: true })
+
+    expect(mocks.installFromGitUrl).not.toHaveBeenCalled()
+
+    consoleSpy.mockRestore()
+    consoleErr.mockRestore()
+  })
+
+  it('exits with error when skill name not found in scope', async () => {
+    const skill = makeSkill()
+    const scopeConfig = await setupManifestWithSkill(skill)
+
+    mocks.resolveScope.mockResolvedValue(scopeConfig)
+
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleErr = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => {
+      throw new Error('process.exit')
+    }) as () => never)
+
+    const { runUpdate } = await import('../../src/cli/commands/update-action.js')
+    await expect(
+      runUpdate('nonexistent-skill', { scope: 'project', all: false, json: true })
+    ).rejects.toThrow('process.exit')
+
+    exitSpy.mockRestore()
+    consoleSpy.mockRestore()
+    consoleErr.mockRestore()
+  })
+})
