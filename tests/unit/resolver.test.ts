@@ -19,3 +19,23 @@ describe('findProjectRoot', () => {
     expect(typeof root).toBe('string')
   })
 })
+
+describe('resolveScope', () => {
+  it('returns a config with correct level for global', async () => {
+    const sc = await resolveScope('global')
+    expect(sc.level).toBe('global')
+    expect(sc.manifestPath).toMatch(/skillforge\.json$/)
+    expect(sc.skillsDir).toMatch(/skills$/)
+  })
+
+  it('returns a config with correct level for shared', async () => {
+    const sc = await resolveScope('shared')
+    expect(sc.level).toBe('shared')
+  })
+
+  it('returns a project scope config rooted at project .skillforge dir', async () => {
+    const sc = await resolveScope('project', __dirname)
+    expect(sc.level).toBe('project')
+    expect(sc.rootPath).toMatch(/\.skillforge$/)
+  })
+})
