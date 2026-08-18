@@ -10,3 +10,5 @@ const MAX_LINES = 500
 const WARN_LINES = 400
 const MIN_DESCRIPTION_WORDS = 30
 const MAX_DESCRIPTION_CHARS = 1024
+
+const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
