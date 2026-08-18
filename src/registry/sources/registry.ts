@@ -180,3 +180,7 @@ export async function searchSkillsets(
   const qs = params.toString()
   return registryFetch<SkillsetSearchResponse>(`/skillsets${qs ? `?${qs}` : ''}`)
 }
+
+export async function getSkillset(name: string): Promise<RegistrySkillset> {
+  return registryFetch<RegistrySkillset>(`/skillsets/${encodeURIComponent(name)}`)
+}
