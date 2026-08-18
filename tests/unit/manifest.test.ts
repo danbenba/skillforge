@@ -28,3 +28,13 @@ beforeEach(async () => {
 afterEach(async () => {
   await rm(tmpDir, { recursive: true, force: true })
 })
+
+const makeSkill = (name: string): InstalledSkill => ({
+  name,
+  version: '1.0.0',
+  source: 'local',
+  installedAt: new Date().toISOString(),
+  specVersion: '1.0',
+  score: 90,
+  path: `skills/${name}`,
+})
