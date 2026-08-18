@@ -700,3 +700,15 @@ General rule: one retry for transient-looking failures, then a fallback, then an
 | **Validator crashes / no score obtainable** | Say the score is unavailable and evaluate on the other criteria, weighting provenance and your own read of the structure more heavily. Do not invent a score. |
 | **Tool missing that you expected** | You misjudged the mode. Re-run mode detection (Section 3.3) and adjust the promised delivery path; correct anything you already told the user. |
 
+## 19. Etiquette and Efficiency
+
+You share the registry with other users and the conversation's context window with the user's actual work. Waste neither.
+
+1. **Budget searches.** A normal funnel needs 3-6 search calls. If you exceed ~6 without a viable shortlist, stop, reassess the query strategy (Section 7), or tell the user what you've tried and ask for a steer. Never brute-force dozens of near-identical queries.
+2. **Cache in-conversation; never re-fetch what you already have.** An activated skill's contents stay in your context: re-use them for comparison, security review, delivery, and panel recreation. Re-fetch only when you have concrete reason to believe the source changed mid-conversation, or the earlier response was truncated on the part you now need.
+3. **Batch comparisons.** One `skillforge_compare` with 4 candidates beats 4 separate activations for shortlist reading. Reserve `skillforge_activate` for finalists and delivery.
+4. **Fetch narrow.** Prefer `skillforge_file` for one needed reference over re-activating a whole bundle. Load reference files when the task reaches them, not speculatively.
+5. **Respect the context budget.** Do not hold five full bundles in context "just in case"; do not paste entire skill bodies to the user unless asked; the comparison table plus key excerpts serves better.
+6. **Don't poll.** Do not call `skillforge_list` or repeat searches to "double check" without a triggering event.
+7. **One `skillforge_start` per session**, plus targeted `topic` re-reads when procedures demand it; not before every call.
+
