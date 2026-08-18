@@ -26,3 +26,46 @@ function renderSkillCard(skill: RegistrySkill, index: number): void {
   }
   console.log(`  ${chalk.dim(`skillforge install ${skill.name}`)}`)
 }
+
+export async function runSearch(
+  query: string,
+  options: { tier?: string; sort: string; limit: string; json: boolean }
+): Promise<void> {
+  const limit = Math.min(parseInt(options.limit, 10) || 10, 50)
+  const spinner = options.json ? null : ora(`Searching registry for "${query}"...`).start()
+
+  try {
+    const result = await searchRegistry({
+      q: query,
+      tier: options.tier as RegistrySkill['trust_tier'] | undefined,
+      sort: options.sort as 'installs' | 'score' | 'recent' | 'name',
+      limit,
+    })
+
+    if (spinner) spinner.stop()
+
+    if (options.json) {
+      printJson(result)
+      return
+    }
+
+    if (result.skills.length === 0) {
+      printInfo(`No skills found for "${query}"`)
+      return
+    }
+
+    console.log(
+      chalk.bold(
+        `\nFound ${result.total} skill${result.total === 1 ? '' : 's'} for "${query}" (showing ${result.skills.length})`
+      )
+    )
+    for (const skill of result.skills) {
+      renderSkillCard(skill, 0)
+    }
+    console.log('')
+  } catch (e) {
+    if (spinner) spinner.fail()
+    printError(e instanceof Error ? e.message : String(e))
+    process.exit(1)
+  }
+}
