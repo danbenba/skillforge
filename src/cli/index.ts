@@ -13,3 +13,46 @@ import { registerConfig } from './commands/config.js'
 
 const require = createRequire(import.meta.url)
 const { version } = require('../../package.json') as { version: string }
+
+export function createCli(): Command {
+  const program = new Command()
+
+  program
+    .name('skillforge')
+    .description('Package manager for Claude skill packages')
+    .version(version)
+    .option('--no-color', 'Disable colored output')
+
+  registerInstall(program)
+  registerUninstall(program)
+  registerUpdate(program)
+  registerList(program)
+  registerValidate(program)
+  registerSuggest(program)
+  registerPublish(program)
+  registerSearch(program)
+  registerSkillset(program)
+  registerConfig(program)
+
+  program
+    .command('mcp', { hidden: true })
+    .description('Start the MCP server')
+    .action(async () => {
+      const { startMcpServer } = await import('../mcp/server.js')
+      await startMcpServer()
+    })
+
+  program
+    .command('serve')
+    .description('Start the remote MCP server (Streamable HTTP, for claude.ai custom connectors)')
+    .option('-p, --port <port>', 'Port to listen on (overrides SKILLFORGE_PORT)')
+    .option('-H, --host <host>', 'Host to bind (overrides SKILLFORGE_HOST)')
+    .action(async (options: { port?: string; host?: string }) => {
+      if (options.port) process.env.SKILLFORGE_PORT = options.port
+      if (options.host) process.env.SKILLFORGE_HOST = options.host
+      const { startHttpServer } = await import('../mcp/http.js')
+      await startHttpServer()
+    })
+
+  return program
+}
