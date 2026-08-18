@@ -37,3 +37,13 @@ const SkillManifestSchema = z.object({
   skillsets: z.record(InstalledSkillsetSchema).default({}),
   updatedAt: z.string(),
 })
+
+export function createEmptyManifest(scope: SkillManifest['scope']): SkillManifest {
+  return {
+    skillforgeVersion: MANIFEST_VERSION,
+    scope,
+    skills: {},
+    skillsets: {},
+    updatedAt: new Date().toISOString(),
+  }
+}
