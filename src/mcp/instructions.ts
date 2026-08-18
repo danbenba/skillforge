@@ -34,3 +34,32 @@ export async function shortInstructions(): Promise<string> {
     return FALLBACK_SHORT
   }
 }
+
+export async function playbook(topic?: string): Promise<string> {
+  const file = await findDocsFile('PLAYBOOK.md')
+  if (!file) return FALLBACK_SHORT
+  let text: string
+  try {
+    text = await readFile(file, 'utf8')
+  } catch {
+    return FALLBACK_SHORT
+  }
+  if (!topic) return text
+  const lines = text.split('\n')
+  const query = topic.toLowerCase()
+  const sections: Array<{ heading: string; start: number; end: number }> = []
+  lines.forEach((line, i) => {
+    const match = line.match(/^(#{1,3})\s+(.*)$/)
+    if (match) {
+      if (sections.length > 0) sections[sections.length - 1].end = i
+      sections.push({ heading: match[2], start: i, end: lines.length })
+    }
+  })
+  const hits = sections.filter((s) => s.heading.toLowerCase().includes(query))
+  if (hits.length === 0) {
+    return `No playbook section matches "${topic}". Available sections:\n${sections
+      .map((s) => `- ${s.heading}`)
+      .join('\n')}`
+  }
+  return hits.map((s) => lines.slice(s.start, s.end).join('\n')).join('\n\n')
+}
