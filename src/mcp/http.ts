@@ -21,3 +21,14 @@ async function findAssetsDir(): Promise<string | null> {
   }
   return null
 }
+
+function cors(_req: Request, res: Response, next: NextFunction): void {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, Mcp-Session-Id, Mcp-Protocol-Version, Last-Event-ID'
+  )
+  res.setHeader('Access-Control-Expose-Headers', 'Mcp-Session-Id')
+  next()
+}
